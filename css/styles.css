@@ -1940,3 +1940,134 @@ body::after {
     flex-wrap: wrap;
   }
 }
+
+/* Layout refinement: keep content comfortably spaced at every screen size. */
+.page-wrapper {
+  padding: 116px clamp(24px, 4vw, 48px) 64px;
+}
+
+.search-form {
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.quick-actions {
+  gap: 18px;
+  margin-bottom: 40px;
+}
+
+.action-card,
+.service-tile {
+  padding: 22px;
+}
+
+.services-grid,
+.contact-grid,
+.loyalty-grid,
+.meals-grid {
+  gap: 16px;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+/* On desktop the language selector is the last control in the header. */
+.language-control {
+  order: 5;
+  flex-shrink: 0;
+}
+
+.rail-pet-face {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rail-pet-face.pet-pressing {
+  transform: scale(0.93);
+  animation-play-state: paused;
+}
+
+@media (max-width: 900px) {
+  .site-header .nav-bottom {
+    padding: 8px 16px 6px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    overflow: visible;
+  }
+
+  /* Keep navigation immediately available instead of hiding it behind a menu. */
+  .nav-toggle,
+  .nav-ticker {
+    display: none;
+  }
+
+  .nav-primary,
+  .nav-primary.open {
+    display: flex;
+    order: 6;
+    flex: 0 0 100%;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding: 3px 0 7px;
+    scrollbar-width: none;
+  }
+
+  .nav-primary::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-primary .nav-link {
+    flex: 0 0 auto;
+    padding: 8px 10px;
+  }
+
+  .language-control {
+    order: 4;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-wrapper {
+    padding: 150px 16px 40px;
+  }
+
+  .search-form,
+  .lookup-form,
+  .vacancy-form,
+  .vacancy-result,
+  .pnr-card {
+    padding: 18px;
+  }
+
+  .search-grid {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .quick-actions,
+  .services-grid,
+  .contact-grid,
+  .loyalty-grid,
+  .meals-grid {
+    gap: 12px;
+  }
+
+  .quick-actions {
+    margin-bottom: 28px;
+  }
+
+  .action-card,
+  .service-tile,
+  .contact-card,
+  .loyalty-card,
+  .meal-card {
+    padding: 18px;
+  }
+}

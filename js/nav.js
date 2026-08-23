@@ -212,13 +212,26 @@
     });
 
     let dragging = false;
+    let longPressTimer = null;
     let startX = 0;
     let startY = 0;
     let origX = 0;
     let origY = 0;
 
-    face.addEventListener('pointerdown', (e) => {
+    function startDragging(fromLongPress = false) {
       dragging = true;
+      if (fromLongPress) face.dataset.dragged = '1';
+      face.classList.remove('pet-pressing');
+      if (navigator.vibrate) navigator.vibrate(20);
+    }
+
+    function clearLongPress() {
+      if (longPressTimer) window.clearTimeout(longPressTimer);
+      longPressTimer = null;
+      face.classList.remove('pet-pressing');
+    }
+
+    face.addEventListener('pointerdown', (e) => {
       face.setPointerCapture(e.pointerId);
       const rect = pet.getBoundingClientRect();
       startX = e.clientX;
@@ -226,12 +239,24 @@
       origX = rect.left;
       origY = rect.top;
       face.dataset.dragged = '0';
+      if (e.pointerType === 'touch') {
+        face.classList.add('pet-pressing');
+        longPressTimer = window.setTimeout(() => startDragging(true), 450);
+      } else {
+        startDragging();
+      }
     });
 
     face.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
+      if (!dragging) {
+        if (Math.abs(dx) + Math.abs(dy) > 8) {
+          face.dataset.dragged = '1';
+          clearLongPress();
+        }
+        return;
+      }
       if (Math.abs(dx) + Math.abs(dy) > 4) face.dataset.dragged = '1';
       const left = Math.min(window.innerWidth - 64, Math.max(8, origX + dx));
       const top = Math.min(window.innerHeight - 64, Math.max(8, origY + dy));
@@ -242,12 +267,18 @@
     });
 
     face.addEventListener('pointerup', () => {
+      clearLongPress();
+      if (!dragging) return;
       dragging = false;
       const rect = pet.getBoundingClientRect();
       localStorage.setItem('irctc-pet-pos', JSON.stringify({
         left: `${rect.left}px`,
         top: `${rect.top}px`,
       }));
+    });
+    face.addEventListener('pointercancel', () => {
+      clearLongPress();
+      dragging = false;
     });
   }
 })();
