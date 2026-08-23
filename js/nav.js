@@ -7,6 +7,9 @@
     { id: 'meals', label: 'MEALS', href: 'meals.html' },
     { id: 'services', label: 'OTHER SERVICES', href: 'services.html' },
     { id: 'contact', label: 'CONTACT US', href: 'contact.html' },
+    { id: 'loyalty', label: 'LOYALTY', href: 'loyalty.html' },
+    { id: 'alerts', label: 'ALERTS', href: 'alerts.html' },
+    { id: 'ewallet', label: 'E-WALLET', href: '#' },
   ];
 
   const tickerLinks = [

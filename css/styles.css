@@ -1978,6 +1978,21 @@ body::after {
   flex-shrink: 0;
 }
 
+/* All quick services now live with the primary navigation. */
+.nav-ticker {
+  display: none;
+}
+
+.nav-primary {
+  justify-content: flex-start;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-primary::-webkit-scrollbar {
+  display: none;
+}
+
 .rail-pet-face {
   touch-action: none;
   user-select: none;
