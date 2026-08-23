@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRCTC — Passenger Details</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="trains">
+  <header id="site-header"></header>
+
+  <main class="page-wrapper">
+    <section class="passenger-section glass-panel">
+      <h2>Passenger details</h2>
+      <p class="desc">Only the information you need to book safely.</p>
+
+      <div class="passenger-block">
+        <h3>Passenger 1</h3>
+        <div class="form-row">
+          <div class="field-group">
+            <label for="name">Full name</label>
+            <input class="field-input" type="text" id="name" value="Vansh Mayekar" readonly>
+          </div>
+          <div class="field-group">
+            <label for="age">Age</label>
+            <input class="field-input" type="text" id="age" value="21" readonly>
+          </div>
+          <div class="field-group">
+            <label for="gender">Gender</label>
+            <input class="field-input" type="text" id="gender" value="Male" readonly>
+          </div>
+          <div class="field-group">
+            <label for="berth">Berth preference</label>
+            <input class="field-input" type="text" id="berth" value="No preference" readonly>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-add">+ ADD PASSENGER</button>
+
+      <div class="tip-box">
+        Tip: Keep the same name as the identity document used for travel.
+      </div>
+    </section>
+
+    <section class="booking-options glass-panel">
+      <h2 style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;margin-bottom:20px;">Booking options</h2>
+
+      <div class="option-row">
+        <span class="label">QUOTA</span>
+        <span class="value">General · Regular booking</span>
+      </div>
+      <div class="option-row">
+        <span class="label">CONCESSION</span>
+        <span class="value">None · Standard fare</span>
+      </div>
+      <div class="option-row">
+        <span></span>
+        <span class="value">Foreign Tourist For eligible foreign tourists &amp; NRIs</span>
+      </div>
+      <div class="option-row">
+        <span></span>
+        <span class="value">Railway Pass / PTO Pass number &amp; PIN required</span>
+      </div>
+    </section>
+
+    <div class="page-actions">
+      <a href="review-pay.html" class="btn-primary">CONTINUE</a>
+    </div>
+  </main>
+
+  <script src="js/nav.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

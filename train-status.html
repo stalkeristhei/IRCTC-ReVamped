@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRCTC — Train Status</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="trains">
+  <header id="site-header"></header>
+
+  <main class="page-wrapper">
+    <div class="page-header">
+      <h1>Train status</h1>
+      <p class="subtitle">Simple live information without railway jargon.</p>
+    </div>
+
+    <div class="status-search glass-panel">
+      <div class="field-group">
+        <label for="pnr-train">PNR / Train number</label>
+        <input class="field-input" type="text" id="pnr-train" value="12652" readonly>
+      </div>
+      <button type="button" class="btn-primary">TRACK</button>
+    </div>
+
+    <div class="status-overview glass-panel">
+      <span class="status-badge on-time">ON TIME</span>
+      <h2>MDU S KRANTI EXP • 12652</h2>
+      <p class="route">New Delhi → MGR Chennai</p>
+
+      <div class="time-track">
+        <div class="time-node">
+          <div class="label">DEPARTED</div>
+          <div class="time">05:20</div>
+        </div>
+        <div class="time-node current">
+          <div class="label">CURRENT</div>
+          <div class="time">12:12</div>
+        </div>
+        <div class="time-node">
+          <div class="label">ARRIVAL</div>
+          <div class="time">16:35</div>
+        </div>
+      </div>
+
+      <div class="update-box">
+        <strong>Latest update</strong>
+        Train left New Delhi on time. Current running status is stable.
+      </div>
+
+      <h3 style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-top:20px;margin-bottom:12px;">What matters</h3>
+      <div class="info-grid">
+        <div>
+          <h3>Platform</h3>
+          <p>5</p>
+        </div>
+        <div>
+          <h3>Next stop</h3>
+          <p>Jhansi</p>
+        </div>
+        <div>
+          <h3>Coach position</h3>
+          <p>7th coach</p>
+        </div>
+      </div>
+
+      <div class="live-route-section">
+        <h3>Live route</h3>
+        <div class="live-route glass-panel" id="live-route"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/nav.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

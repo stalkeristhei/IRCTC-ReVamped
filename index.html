@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRCTC — Travel, simplified.</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="home">
+  <header id="site-header"></header>
+
+  <main class="page-wrapper">
+    <section class="hero">
+      <h1>Travel, simplified.</h1>
+      <p>Everything you need for a railway journey — in one clear place.</p>
+    </section>
+
+    <form class="search-form glass-panel" action="trains.html">
+      <div class="search-grid">
+        <div class="field-group">
+          <label for="from">FROM</label>
+          <input class="field-input" type="text" id="from" value="New Delhi" readonly>
+        </div>
+        <div class="field-group">
+          <label for="to">TO</label>
+          <input class="field-input" type="text" id="to" value="MGR Chennai" readonly>
+        </div>
+        <div class="field-group">
+          <label for="date">DATE</label>
+          <input class="field-input" type="date" id="date" name="date" required>
+        </div>
+        <div class="field-group">
+          <label for="class">CLASS</label>
+          <input class="field-input" type="text" id="class" value="Travel class" readonly>
+        </div>
+        <div class="field-group">
+          <label for="quota">QUOTA</label>
+          <input class="field-input" type="text" id="quota" value="General" readonly>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">SEARCH TRAINS</button>
+    </form>
+
+    <div class="quick-actions">
+      <a href="#" class="action-card glass-panel">
+        <div class="action-icon">P</div>
+        <div>
+          <h3>CHECK PNR</h3>
+          <p>Enter your PNR to see booking status</p>
+        </div>
+      </a>
+      <a href="train-status.html" class="action-card glass-panel">
+        <div class="action-icon">T</div>
+        <div>
+          <h3>TRAIN STATUS</h3>
+          <p>See live running status &amp; platform</p>
+        </div>
+      </a>
+      <a href="refund-tracker.html" class="action-card glass-panel">
+        <div class="action-icon">₹</div>
+        <div>
+          <h3>TRACK A REFUND</h3>
+          <p>Follow your refund from start to finish</p>
+        </div>
+      </a>
+      <a href="help.html" class="action-card glass-panel">
+        <div class="action-icon">?</div>
+        <div>
+          <h3>GET HELP</h3>
+          <p>Find the right help for your issue</p>
+        </div>
+      </a>
+    </div>
+
+    <p class="section-label">Popular today</p>
+    <div class="services-grid">
+      <a href="#" class="service-tile glass-panel">
+        <div class="tile-icon">E</div>
+        <span>E-CATERING</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Order food to your coach</p>
+      </a>
+      <a href="#" class="service-tile glass-panel">
+        <div class="tile-icon">H</div>
+        <span>HOTELS</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Find a place to stay</p>
+      </a>
+      <a href="#" class="service-tile glass-panel">
+        <div class="tile-icon">L</div>
+        <span>LOYALTY</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Collect and use rewards</p>
+      </a>
+      <a href="services.html" class="service-tile glass-panel">
+        <div class="tile-icon">T</div>
+        <span>TOURISM</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Explore IRCTC packages</p>
+      </a>
+    </div>
+  </main>
+
+  <script src="js/nav.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
