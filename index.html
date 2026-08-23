@@ -3,96 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IRCTC — Travel, simplified.</title>
+  <title>IRCTC — Book tickets</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body data-page="home">
   <header id="site-header"></header>
 
   <main class="page-wrapper">
-    <section class="hero">
-      <h1>Travel, simplified.</h1>
-      <p>Everything you need for a railway journey — in one clear place.</p>
-    </section>
-
     <form class="search-form glass-panel" action="trains.html">
       <div class="search-grid">
         <div class="field-group">
-          <label for="from">FROM</label>
-          <input class="field-input" type="text" id="from" value="New Delhi" readonly>
+          <label for="from" data-i18n="from">FROM</label>
+          <input class="field-input" type="text" id="from" name="from" list="station-list" value="New Delhi (NDLS)" autocomplete="off">
         </div>
         <div class="field-group">
-          <label for="to">TO</label>
-          <input class="field-input" type="text" id="to" value="MGR Chennai" readonly>
+          <label for="to" data-i18n="to">TO</label>
+          <input class="field-input" type="text" id="to" name="to" list="station-list" value="MGR Chennai Central (MAS)" autocomplete="off">
         </div>
         <div class="field-group">
-          <label for="date">DATE</label>
+          <label for="date" data-i18n="journeyDate">DATE</label>
           <input class="field-input" type="date" id="date" name="date" required>
         </div>
         <div class="field-group">
-          <label for="class">CLASS</label>
-          <input class="field-input" type="text" id="class" value="Travel class" readonly>
+          <label for="class" data-i18n="travelClass">CLASS</label>
+          <select class="field-input" id="class" name="class">
+            <option value="ALL" selected>ALL</option>
+            <option value="EA">Anubhuti Class (EA)</option>
+            <option value="1A">AC First Class (1A)</option>
+            <option value="EV">Vistadome AC (EV)</option>
+            <option value="EC">Exec. Chair Car (EC)</option>
+            <option value="2A">AC 2 Tier (2A)</option>
+            <option value="FC">First Class (FC)</option>
+            <option value="3A">AC 3 Tier (3A)</option>
+            <option value="3E">AC 3 Economy (3E)</option>
+            <option value="VC">Vistadome Chair Car (VC)</option>
+            <option value="CC">AC Chair Car (CC)</option>
+            <option value="SL">Sleeper (SL)</option>
+            <option value="VS">Vistadome Non AC (VS)</option>
+            <option value="2S">Second Sitting (2S)</option>
+          </select>
         </div>
         <div class="field-group">
-          <label for="quota">QUOTA</label>
-          <input class="field-input" type="text" id="quota" value="General" readonly>
+          <label for="quota" data-i18n="quota">QUOTA</label>
+          <select class="field-input" id="quota" name="quota">
+            <option value="GN" selected>GENERAL</option>
+            <option value="LD">LADIES</option>
+            <option value="SS">LOWER BERTH/SR.CITIZEN</option>
+            <option value="FT">FOREIGN CITIZEN</option>
+            <option value="HP">PERSON WITH DISABILITY</option>
+            <option value="DP">DUTY PASS</option>
+            <option value="TQ">TATKAL</option>
+            <option value="PT">PREMIUM TATKAL</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="concession" data-i18n="concession">CONCESSION</label>
+          <select class="field-input" id="concession" name="concession">
+            <option value="NONE" selected>None</option>
+            <option value="PWD">Person with disability</option>
+            <option value="PASS">Railway pass</option>
+          </select>
         </div>
       </div>
-      <button type="submit" class="btn-primary">SEARCH TRAINS</button>
+      <datalist id="station-list" data-stations></datalist>
+      <button type="submit" class="btn-primary" data-i18n="searchTrains">SEARCH TRAINS</button>
     </form>
 
     <div class="quick-actions">
-      <a href="#" class="action-card glass-panel">
+      <a href="pnr.html" class="action-card glass-panel">
         <div class="action-icon">P</div>
         <div>
-          <h3>CHECK PNR</h3>
-          <p>Enter your PNR to see booking status</p>
+          <h3 data-i18n="checkPnr">CHECK PNR</h3>
+          <p data-i18n="checkPnrCopy">Enter your PNR to see booking status</p>
         </div>
       </a>
       <a href="train-status.html" class="action-card glass-panel">
         <div class="action-icon">T</div>
         <div>
-          <h3>TRAIN STATUS</h3>
-          <p>See live running status &amp; platform</p>
+          <h3 data-i18n="trainStatus">TRAIN STATUS</h3>
+          <p data-i18n="trainStatusCopy">See live running status &amp; platform</p>
         </div>
       </a>
       <a href="refund-tracker.html" class="action-card glass-panel">
         <div class="action-icon">₹</div>
         <div>
-          <h3>TRACK A REFUND</h3>
-          <p>Follow your refund from start to finish</p>
+          <h3 data-i18n="trackRefund">TRACK A REFUND</h3>
+          <p data-i18n="refundCopy">Follow your refund from start to finish</p>
         </div>
       </a>
-      <a href="help.html" class="action-card glass-panel">
-        <div class="action-icon">?</div>
+      <a href="vacancy.html" class="action-card glass-panel">
+        <div class="action-icon">C</div>
         <div>
-          <h3>GET HELP</h3>
-          <p>Find the right help for your issue</p>
+          <h3 data-i18n="chartVacancy">CHART / VACANCY LIST</h3>
+          <p data-i18n="vacancyCopy">See dummy berth vacancy by class</p>
         </div>
       </a>
     </div>
 
-    <p class="section-label">Popular today</p>
+    <p class="section-label">Popular today — associates</p>
     <div class="services-grid">
-      <a href="#" class="service-tile glass-panel">
+      <a href="https://www.ecatering.irctc.co.in/" class="service-tile glass-panel" target="_blank" rel="noopener">
         <div class="tile-icon">E</div>
         <span>E-CATERING</span>
-        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Order food to your coach</p>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Partner food delivery</p>
       </a>
-      <a href="#" class="service-tile glass-panel">
+      <a href="https://www.air.irctc.co.in/" class="service-tile glass-panel" target="_blank" rel="noopener">
+        <div class="tile-icon">F</div>
+        <span>FLIGHTS</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">IRCTC Air associate</p>
+      </a>
+      <a href="https://www.hotels.irctc.co.in/" class="service-tile glass-panel" target="_blank" rel="noopener">
         <div class="tile-icon">H</div>
         <span>HOTELS</span>
-        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Find a place to stay</p>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Stay with partners</p>
       </a>
-      <a href="#" class="service-tile glass-panel">
-        <div class="tile-icon">L</div>
-        <span>LOYALTY</span>
-        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Collect and use rewards</p>
-      </a>
-      <a href="services.html" class="service-tile glass-panel">
-        <div class="tile-icon">T</div>
-        <span>TOURISM</span>
-        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Explore IRCTC packages</p>
+      <a href="https://www.bus.irctc.co.in/" class="service-tile glass-panel" target="_blank" rel="noopener">
+        <div class="tile-icon">B</div>
+        <span>BUS</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Road travel associate</p>
       </a>
     </div>
   </main>

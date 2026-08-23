@@ -1,17 +1,17 @@
 (function () {
-  const page = document.body.dataset.page || '';
+  const page = document.body.dataset.page || document.body.dataset.page || '';
 
   const primaryLinks = [
     { id: 'home', label: 'HOME', href: 'index.html' },
     { id: 'trains', label: 'TRAINS', href: 'trains.html' },
-    { id: 'meals', label: 'MEALS', href: '#' },
+    { id: 'meals', label: 'MEALS', href: 'meals.html' },
     { id: 'services', label: 'OTHER SERVICES', href: 'services.html' },
-    { id: 'contact', label: 'CONTACT US', href: '#' },
+    { id: 'contact', label: 'CONTACT US', href: 'contact.html' },
   ];
 
   const tickerLinks = [
-    { label: 'LOYALTY', href: '#' },
-    { label: 'ALERTS', href: '#' },
+    { label: 'LOYALTY', href: 'loyalty.html' },
+    { label: 'ALERTS', href: 'alerts.html' },
     { label: 'E-WALLET', href: '#' },
   ];
 
@@ -23,24 +23,26 @@
     'Platform change possible at major junctions — verify live status before boarding',
   ];
 
-  const header = document.getElementById('site-header');
+  const header =
+    document.getElementById('site-header') ||
+    document.getElementById('site-header');
   if (!header) return;
 
   const primaryHtml = primaryLinks
     .map(
       (l) =>
-        `<a href="${l.href}" class="nav-link${page === l.id ? ' active' : ''}">${l.label}</a>`
+        `<a href="${l.href}" class="nav-link${page === l.id ? ' active' : ''}" data-i18n="nav${l.id[0].toUpperCase()}${l.id.slice(1)}">${l.label}</a>`
     )
     .join('');
 
   const tickerHtml = tickerLinks
     .map(
       (l, i) =>
-        `<a href="${l.href}" class="ticker-item${i === 0 ? ' active' : ''}" data-index="${i}">${l.label}</a>`
+        `<a href="${l.href}" class="ticker-item${i === 0 ? ' active' : ''}" data-index="${i}" data-i18n="ticker${l.label.replace(/[^a-z]/gi, '')}">${l.label}</a>`
     )
     .join('');
 
-  header.className = 'site-header';
+  header.className = 'site-header site-header';
   header.innerHTML = `
     <div class="top-bar">
       <div class="top-bar-left">
@@ -62,7 +64,9 @@
       <div class="nav-auth" id="nav-auth">
         <button type="button" class="login-btn" id="auth-toggle">LOGIN / REGISTER</button>
       </div>
-      <nav class="nav-primary" aria-label="Main navigation">${primaryHtml}</nav>
+      <label class="language-control" for="language-select"><span class="sr-only">Language</span><select id="language-select" aria-label="Choose language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="kok">कोंकणी</option><option value="ur">اردو</option></select></label>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+      <nav class="nav-primary" id="nav-primary" aria-label="Main navigation">${primaryHtml}</nav>
       <div class="nav-ticker" aria-label="Quick services">
         <button type="button" class="ticker-btn ticker-prev" aria-label="Previous service">‹</button>
         <div class="ticker-viewport">
@@ -73,7 +77,6 @@
     </div>
   `;
 
-  // Announcement rotation
   let annIndex = 0;
   const annEl = document.getElementById('announcement-text');
   setInterval(() => {
@@ -85,7 +88,6 @@
     }, 300);
   }, 6000);
 
-  // Auth toggle (demo: login ↔ profile)
   const authEl = document.getElementById('nav-auth');
   const stored = localStorage.getItem('irctc-logged-in') === 'true';
 
@@ -115,7 +117,22 @@
 
   renderAuth(stored);
 
-  // Ticker
+  const languageSelect = document.getElementById('language-select');
+  const savedLanguage = localStorage.getItem('irctc-language') || 'en';
+  languageSelect.value = savedLanguage;
+  languageSelect.addEventListener('change', () => {
+    localStorage.setItem('irctc-language', languageSelect.value);
+    window.dispatchEvent(new CustomEvent('irctc-language-change', { detail: languageSelect.value }));
+  });
+
+  const toggle = document.getElementById('nav-toggle');
+  const primary = document.getElementById('nav-primary');
+  toggle.addEventListener('click', () => {
+    const open = primary.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
+    toggle.textContent = open ? '✕' : '☰';
+  });
+
   let tickerIndex = 0;
   const track = document.getElementById('ticker-track');
   const items = track.querySelectorAll('.ticker-item');
@@ -136,7 +153,6 @@
     showTicker(tickerIndex - 1);
     startTickerAuto();
   });
-
   document.querySelector('.ticker-next').addEventListener('click', () => {
     showTicker(tickerIndex + 1);
     startTickerAuto();
@@ -144,4 +160,94 @@
 
   showTicker(0);
   startTickerAuto();
+
+  if (!document.getElementById('rail-pet')) {
+    const pet = document.createElement('div');
+    pet.id = 'rail-pet';
+    pet.className = 'rail-pet';
+    pet.innerHTML = `
+      <button type="button" class="rail-pet-face" id="rail-pet-toggle" aria-label="Open help assistant">
+        <span class="rail-pet-dot"></span>
+        <span class="rail-pet-label">AI</span>
+      </button>
+      <div class="rail-pet-panel glass-panel" id="rail-pet-panel" hidden>
+        <div class="rail-pet-head">
+          <strong>IRCTC Assistant</strong>
+          <span class="demo-badge">Demo</span>
+          <button type="button" class="rail-pet-close" id="rail-pet-close" aria-label="Close">✕</button>
+        </div>
+        <div class="help-messages" id="help-messages"></div>
+        <form class="help-form" id="help-form">
+          <input class="field-input" type="text" id="help-input" placeholder="Ask about PNR, refunds…" autocomplete="off" required>
+          <button type="submit" class="btn-primary">SEND</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(pet);
+
+    const saved = localStorage.getItem('irctc-pet-pos');
+    if (saved) {
+      try {
+        const pos = JSON.parse(saved);
+        pet.style.left = pos.left;
+        pet.style.top = pos.top;
+        pet.style.right = 'auto';
+        pet.style.bottom = 'auto';
+      } catch (e) {
+        /* keep default */
+      }
+    }
+
+    const face = document.getElementById('rail-pet-toggle');
+    const panel = document.getElementById('rail-pet-panel');
+    document.getElementById('rail-pet-close').addEventListener('click', () => {
+      panel.hidden = true;
+    });
+    face.addEventListener('click', () => {
+      if (face.dataset.dragged === '1') {
+        face.dataset.dragged = '0';
+        return;
+      }
+      panel.hidden = !panel.hidden;
+    });
+
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    let origX = 0;
+    let origY = 0;
+
+    face.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      face.setPointerCapture(e.pointerId);
+      const rect = pet.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      origX = rect.left;
+      origY = rect.top;
+      face.dataset.dragged = '0';
+    });
+
+    face.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dx) + Math.abs(dy) > 4) face.dataset.dragged = '1';
+      const left = Math.min(window.innerWidth - 64, Math.max(8, origX + dx));
+      const top = Math.min(window.innerHeight - 64, Math.max(8, origY + dy));
+      pet.style.left = `${left}px`;
+      pet.style.top = `${top}px`;
+      pet.style.right = 'auto';
+      pet.style.bottom = 'auto';
+    });
+
+    face.addEventListener('pointerup', () => {
+      dragging = false;
+      const rect = pet.getBoundingClientRect();
+      localStorage.setItem('irctc-pet-pos', JSON.stringify({
+        left: `${rect.left}px`,
+        top: `${rect.top}px`,
+      }));
+    });
+  }
 })();

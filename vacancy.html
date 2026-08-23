@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRCTC — Chart &amp; Vacancy</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="trains">
+  <header id="site-header"></header>
+  <main class="page-wrapper">
+    <div class="page-header">
+      <h1 data-i18n="vacancyTitle">Chart / vacancy list</h1>
+      <p class="subtitle" data-i18n="vacancySubtitle">View a sample vacancy chart by train and travel class.</p>
+    </div>
+    <form class="glass-panel vacancy-form" id="vacancy-form">
+      <div class="search-grid">
+        <div class="field-group"><label for="vacancy-train" data-i18n="train">Train</label><select class="field-input" id="vacancy-train"><option>12652 — MDU S Kranti Exp</option><option>12270 — MAS Duronto Exp</option><option>12622 — Tamil Nadu Exp</option></select></div>
+        <div class="field-group"><label for="vacancy-date" data-i18n="journeyDate">Journey date</label><input class="field-input" type="date" id="vacancy-date" required></div>
+        <div class="field-group"><label for="vacancy-class" data-i18n="travelClass">Class</label><select class="field-input" id="vacancy-class"><option>3A — AC 3 Tier</option><option>2A — AC 2 Tier</option><option>SL — Sleeper</option></select></div>
+      </div>
+      <button class="btn-primary" type="submit" data-i18n="viewVacancy">View vacancy</button>
+    </form>
+    <section id="vacancy-chart" class="glass-panel vacancy-result" hidden>
+      <div class="section-heading"><div><span class="status-badge on-time" data-i18n="sampleChart">Sample chart</span><h2>12652 — MDU S Kranti Exp</h2><p>New Delhi → MGR Chennai · 3A</p></div><p class="last-updated">Updated just now</p></div>
+      <div class="table-wrap"><table class="vacancy-table"><thead><tr><th>Coach</th><th>Berths</th><th>Available</th><th>Status</th></tr></thead><tbody><tr><td>B1</td><td>64</td><td>12</td><td><span class="availability available">AVAILABLE</span></td></tr><tr><td>B2</td><td>64</td><td>6</td><td><span class="availability available">AVAILABLE</span></td></tr><tr><td>B3</td><td>64</td><td>0</td><td><span class="availability waitlist">WL 4</span></td></tr></tbody></table></div>
+      <p class="tip-box" data-i18n="chartNote">This is a demonstration chart. Final berth allocation is confirmed only after chart preparation.</p>
+    </section>
+  </main>
+  <script src="js/nav.js"></script><script src="js/main.js"></script>
+</body>
+</html>
