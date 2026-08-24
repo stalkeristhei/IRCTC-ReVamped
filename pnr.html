@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRCTC — PNR Status</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="trains">
+  <header id="site-header"></header>
+  <main class="page-wrapper page-narrow">
+    <div class="page-header">
+      <h1 data-i18n="pnrTitle">Check PNR status</h1>
+      <p class="subtitle" data-i18n="pnrSubtitle">Enter your 10-digit PNR to view your booking and berth status.</p>
+    </div>
+    <form class="glass-panel lookup-form" id="pnr-form" novalidate>
+      <div class="field-group">
+        <label for="pnr-input" data-i18n="pnrLabel">PNR number</label>
+        <input class="field-input" type="text" id="pnr-input" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" placeholder="Enter 10-digit PNR" data-i18n-placeholder="pnrPlaceholder" required>
+      </div>
+      <button type="submit" class="btn-primary" data-i18n="checkStatus">Check status</button>
+    </form>
+    <div id="pnr-result" class="result-area" hidden></div>
+  </main>
+  <script src="js/nav.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

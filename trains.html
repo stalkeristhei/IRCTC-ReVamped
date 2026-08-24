@@ -12,24 +12,44 @@
   <main class="page-wrapper">
     <div class="page-header">
       <h1>New Delhi → MGR Chennai</h1>
-      <p class="meta">Tue, 25 Aug 2026 • 4 trains found</p>
+      <p class="meta" id="train-count">4 trains found</p>
     </div>
 
     <div class="filters-bar glass-panel">
       <h2>FILTERS</h2>
-      <div class="filter-chips">
-        <span class="chip-group"><strong>Departure time</strong> Morning • Afternoon • Evening • Night</span>
-        <span class="chip-group"><strong>Duration</strong> Under 12h • 12–24h • 24h+</span>
-        <span class="chip-group"><strong>Availability</strong> Available • RAC • Waitlist</span>
-        <span class="chip-group"><strong>Class</strong> SL • 3A • 2A • 1A</span>
+      <div class="filter-groups">
+        <div class="filter-row">
+          <span class="chip-label">Departure</span>
+          <button type="button" class="filter-chip" data-group="dep" data-value="morning">Morning</button>
+          <button type="button" class="filter-chip" data-group="dep" data-value="afternoon">Afternoon</button>
+          <button type="button" class="filter-chip" data-group="dep" data-value="evening">Evening</button>
+          <button type="button" class="filter-chip" data-group="dep" data-value="night">Night</button>
+        </div>
+        <div class="filter-row">
+          <span class="chip-label">Duration</span>
+          <button type="button" class="filter-chip" data-group="duration" data-value="under12">Under 12h</button>
+          <button type="button" class="filter-chip" data-group="duration" data-value="12-24">12–24h</button>
+          <button type="button" class="filter-chip" data-group="duration" data-value="24h+">24h+</button>
+        </div>
+        <div class="filter-row">
+          <span class="chip-label">Availability</span>
+          <button type="button" class="filter-chip" data-group="avail" data-value="available">Available</button>
+          <button type="button" class="filter-chip" data-group="avail" data-value="rac">RAC</button>
+          <button type="button" class="filter-chip" data-group="avail" data-value="waitlist">Waitlist</button>
+        </div>
+        <div class="filter-row">
+          <span class="chip-label">Class</span>
+          <button type="button" class="filter-chip" data-group="cls" data-value="SL">SL</button>
+          <button type="button" class="filter-chip" data-group="cls" data-value="3A">3A</button>
+          <button type="button" class="filter-chip" data-group="cls" data-value="2A">2A</button>
+          <button type="button" class="filter-chip" data-group="cls" data-value="1A">1A</button>
+        </div>
       </div>
-      <span class="sort-label">SORT: EARLIEST</span>
+      <button type="button" class="btn-view" id="clear-filters">CLEAR</button>
     </div>
 
-    <p class="section-label">Filter trains</p>
-
     <div class="train-list">
-      <div class="train-card glass-panel">
+      <div class="train-card glass-panel" data-dep="morning" data-duration="24h+" data-avail="available" data-class="3A,SL">
         <div class="train-card-main">
           <span class="train-number">12652</span>
           <div class="train-info">
@@ -50,7 +70,7 @@
         </div>
       </div>
 
-      <div class="train-card glass-panel">
+      <div class="train-card glass-panel" data-dep="afternoon" data-duration="24h+" data-avail="available" data-class="2A,3A,1A">
         <div class="train-card-main">
           <span class="train-number">12270</span>
           <div class="train-info">
@@ -71,7 +91,7 @@
         </div>
       </div>
 
-      <div class="train-card glass-panel">
+      <div class="train-card glass-panel" data-dep="evening" data-duration="24h+" data-avail="waitlist" data-class="3A,SL">
         <div class="train-card-main">
           <span class="train-number">12616</span>
           <div class="train-info">
@@ -88,6 +108,27 @@
         <div class="train-card-side">
           <span class="availability waitlist">3A WL 12</span>
           <span class="train-price">₹1,720</span>
+          <a href="passenger-details.html" class="btn-view">VIEW</a>
+        </div>
+      </div>
+
+      <div class="train-card glass-panel" data-dep="night" data-duration="12-24" data-avail="rac" data-class="SL,3A">
+        <div class="train-card-main">
+          <span class="train-number">12622</span>
+          <div class="train-info">
+            <h3>TAMIL NADU EXP</h3>
+            <div class="train-route">
+              <span class="train-time">22:30</span>
+              <span>New Delhi</span>
+              <span class="train-duration">22h 45m</span>
+              <span class="train-time">21:15</span>
+              <span>MGR Chennai</span>
+            </div>
+          </div>
+        </div>
+        <div class="train-card-side">
+          <span class="availability rac">SL RAC 4</span>
+          <span class="train-price">₹835</span>
           <a href="passenger-details.html" class="btn-view">VIEW</a>
         </div>
       </div>
