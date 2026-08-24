@@ -1,0 +1,20 @@
+{
+  "name": "irctc-revamped",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IRCTC ReVamped static frontend with an Express backend foundation.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "redis": "^4.7.1"
+  }
+}
