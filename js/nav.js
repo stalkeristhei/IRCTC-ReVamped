@@ -92,33 +92,211 @@
   }, 6000);
 
   const authEl = document.getElementById('nav-auth');
-  const stored = localStorage.getItem('irctc-logged-in') === 'true';
 
-  function renderAuth(loggedIn) {
-    if (loggedIn) {
+  function getSession() {
+    try {
+      return JSON.parse(localStorage.getItem('irctc-auth-session'));
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function initials(value) {
+    return value
+      .split(/[\s@._-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase() || 'IR';
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>'"]/g, (character) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;',
+    }[character]));
+  }
+
+  function renderAuth() {
+    const session = getSession();
+    if (session) {
       authEl.innerHTML = `
         <button type="button" class="profile-btn" id="auth-toggle" aria-label="Account menu">
-          <span class="profile-avatar">VM</span>
-          <span class="profile-name">Vansh Mayekar</span>
+          <span class="profile-avatar">${initials(session.name)}</span>
+          <span class="profile-name">${session.role === 'agent' ? 'AGENT · ' : ''}${escapeHtml(session.name)}</span>
         </button>
       `;
-      document.querySelector('.welcome-text').textContent = 'Welcome, Vansh';
+      document.querySelector('.welcome-text').textContent = `Welcome, ${session.name}`;
     } else {
       authEl.innerHTML = `
         <button type="button" class="login-btn" id="auth-toggle">LOGIN / REGISTER</button>
       `;
       document.querySelector('.welcome-text').textContent = 'Welcome, Passenger';
     }
-    document.getElementById('auth-toggle').addEventListener('click', toggleAuth);
+    document.getElementById('auth-toggle').addEventListener('click', () => {
+      if (getSession()) openAccountMenu();
+      else openAuthModal();
+    });
   }
 
-  function toggleAuth() {
-    const now = localStorage.getItem('irctc-logged-in') !== 'true';
-    localStorage.setItem('irctc-logged-in', now);
-    renderAuth(now);
+  function closeAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.remove();
+    document.body.classList.remove('auth-modal-open');
   }
 
-  renderAuth(stored);
+  function openAccountMenu() {
+    const session = getSession();
+    if (!session) return openAuthModal();
+    closeAuthModal();
+    const modal = document.createElement('div');
+    modal.className = 'auth-modal-backdrop';
+    modal.id = 'auth-modal';
+    modal.innerHTML = `
+      <section class="auth-modal glass-panel account-menu" role="dialog" aria-modal="true" aria-labelledby="account-title">
+        <button class="auth-close" type="button" aria-label="Close account menu">×</button>
+        <span class="auth-kicker">SIGNED IN</span>
+        <h2 id="account-title">${escapeHtml(session.name)}</h2>
+        <p class="account-role">${session.role === 'agent' ? 'Authorized Agent account' : 'Passenger account'}</p>
+        <p class="auth-note">Your live session, permissions and account status are checked by the authentication service.</p>
+        <button class="btn-secondary account-signout" type="button">SIGN OUT</button>
+      </section>`;
+    document.body.appendChild(modal);
+    document.body.classList.add('auth-modal-open');
+    modal.querySelector('.auth-close').addEventListener('click', closeAuthModal);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeAuthModal();
+    });
+    modal.querySelector('.account-signout').addEventListener('click', () => {
+      localStorage.removeItem('irctc-auth-session');
+      localStorage.removeItem('irctc-logged-in');
+      closeAuthModal();
+      renderAuth();
+    });
+  }
+
+  function openAuthModal() {
+    closeAuthModal();
+    const modal = document.createElement('div');
+    modal.className = 'auth-modal-backdrop';
+    modal.id = 'auth-modal';
+    modal.innerHTML = `
+      <section class="auth-modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <button class="auth-close" type="button" aria-label="Close login">×</button>
+        <span class="auth-kicker">SECURE ACCESS</span>
+        <h2 id="auth-title">Sign in to IRCTC</h2>
+        <p class="auth-subtitle">Choose the account that matches your booking access.</p>
+        <div class="auth-role-switch" role="tablist" aria-label="Account type">
+          <button type="button" role="tab" aria-selected="true" class="auth-role active" data-role="user">User login</button>
+          <button type="button" role="tab" aria-selected="false" class="auth-role" data-role="agent">Agent login</button>
+        </div>
+        <form id="auth-form" novalidate>
+          <div class="field-group">
+            <label id="identity-label" for="auth-identity">User ID or email</label>
+            <input class="field-input" id="auth-identity" name="identity" autocomplete="username" required maxlength="80" placeholder="Enter your User ID or email">
+          </div>
+          <div class="field-group auth-password-group">
+            <label for="auth-password">Password</label>
+            <div class="password-control">
+              <input class="field-input" id="auth-password" name="password" type="password" autocomplete="current-password" required minlength="8" placeholder="Enter your password">
+              <button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">Show</button>
+            </div>
+          </div>
+          <div class="agent-terms" id="agent-terms" hidden>
+            <p><strong>Authorized agent declaration</strong></p>
+            <ul>
+              <li>I will not use a personal IRCTC User ID to book tickets for customers.</li>
+              <li>I will not charge above the prescribed IRCTC ticket fare.</li>
+              <li>I will not alter the contents of the ERS.</li>
+              <li>I will follow all applicable IRCTC and Ministry of Railways rules for bookings, cancellations and refunds.</li>
+            </ul>
+            <label class="agreement-check"><input id="agent-agreement" type="checkbox"> I confirm this declaration.</label>
+          </div>
+          <p class="auth-risk-note">A CAPTCHA or additional verification is requested only when the risk check requires it.</p>
+          <p class="auth-error" id="auth-error" role="alert" hidden></p>
+          <button type="submit" class="btn-primary auth-submit">SIGN IN SECURELY</button>
+          <div class="auth-links"><button type="button" data-auth-info="recovery">Forgot account details?</button><button type="button" data-auth-info="signup">New user? Register</button></div>
+        </form>
+        <p class="auth-prototype-note">Demo interface — real credentials are verified server-side and are never stored in this browser.</p>
+      </section>`;
+    document.body.appendChild(modal);
+    document.body.classList.add('auth-modal-open');
+
+    let role = 'user';
+    const form = modal.querySelector('#auth-form');
+    const identity = modal.querySelector('#auth-identity');
+    const password = modal.querySelector('#auth-password');
+    const agreement = modal.querySelector('#agent-agreement');
+    const terms = modal.querySelector('#agent-terms');
+    const error = modal.querySelector('#auth-error');
+    const submit = modal.querySelector('.auth-submit');
+
+    function setRole(nextRole) {
+      role = nextRole;
+      const agent = role === 'agent';
+      modal.querySelectorAll('.auth-role').forEach((button) => {
+        const selected = button.dataset.role === role;
+        button.classList.toggle('active', selected);
+        button.setAttribute('aria-selected', selected);
+      });
+      terms.hidden = !agent;
+      agreement.required = agent;
+      identity.value = '';
+      identity.placeholder = agent ? 'Enter your registered Agent User ID' : 'Enter your User ID or email';
+      modal.querySelector('#identity-label').textContent = agent ? 'Agent User ID' : 'User ID or email';
+      error.hidden = true;
+      identity.focus();
+    }
+
+    modal.querySelectorAll('.auth-role').forEach((button) => button.addEventListener('click', () => setRole(button.dataset.role)));
+    modal.querySelector('.auth-close').addEventListener('click', closeAuthModal);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeAuthModal();
+    });
+    document.addEventListener('keydown', function onEscape(event) {
+      if (event.key !== 'Escape') return;
+      closeAuthModal();
+      document.removeEventListener('keydown', onEscape);
+    });
+    modal.querySelector('.password-toggle').addEventListener('click', (event) => {
+      const revealed = password.type === 'text';
+      password.type = revealed ? 'password' : 'text';
+      event.currentTarget.textContent = revealed ? 'Show' : 'Hide';
+      event.currentTarget.setAttribute('aria-pressed', String(!revealed));
+      event.currentTarget.setAttribute('aria-label', revealed ? 'Show password' : 'Hide password');
+    });
+    modal.querySelectorAll('[data-auth-info]').forEach((button) => button.addEventListener('click', () => {
+      error.textContent = button.dataset.authInfo === 'recovery'
+        ? 'Account recovery uses a verified mobile number or email and a one-time password.'
+        : 'Registration continues through a verified contact and progressive account validation flow.';
+      error.hidden = false;
+      error.classList.add('is-info');
+    }));
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      error.classList.remove('is-info');
+      if (!form.checkValidity()) {
+        error.textContent = role === 'agent' && !agreement.checked
+          ? 'Confirm the authorized agent declaration before continuing.'
+          : 'Enter a valid account ID and password to continue.';
+        error.hidden = false;
+        form.reportValidity();
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = 'VERIFYING…';
+      window.setTimeout(() => {
+        const name = identity.value.trim();
+        localStorage.setItem('irctc-auth-session', JSON.stringify({ name, role }));
+        localStorage.setItem('irctc-logged-in', 'true');
+        closeAuthModal();
+        renderAuth();
+      }, 500);
+    });
+    identity.focus();
+  }
+
+  renderAuth();
 
   const languageSelect = document.getElementById('language-select');
   const savedLanguage = localStorage.getItem('irctc-language') || 'en';
