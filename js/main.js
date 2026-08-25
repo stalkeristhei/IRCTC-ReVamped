@@ -330,7 +330,19 @@ const BOT_LOCALES = {
     replies: { pnr: '\u0905\u092a\u0928\u093e 10 \u0905\u0902\u0915\u094b\u0902 \u0915\u093e \u092a\u0940\u090f\u0928\u0906\u0930 \u0938\u093e\u091d\u093e \u0915\u0930\u0947\u0902, \u092f\u093e \u0939\u094b\u092e \u092a\u0947\u091c \u092a\u0930 \u092a\u0940\u090f\u0928\u0906\u0930 \u091c\u093e\u0902\u091a\u0947\u0902\u0964', refund: '\u0930\u093f\u092b\u0902\u0921 \u092e\u0947\u0902 \u0906\u092e\u0924\u094c\u0930 \u092a\u0930 5 \u0938\u0947 7 \u0915\u093e\u0930\u094d\u092f \u0926\u093f\u0935\u0938 \u0932\u0917\u0924\u0947 \u0939\u0948\u0902\u0964 \u091f\u094d\u0930\u0948\u0915 \u0905 \u0930\u093f\u092b\u0902\u0921 \u092e\u0947\u0902 \u092a\u094d\u0930\u0917\u0924\u093f \u0926\u0947\u0916\u0947\u0902\u0964', status: '\u091f\u094d\u0930\u0947\u0928 \u0938\u094d\u0925\u093f\u0924\u093f \u092a\u0947\u091c \u092a\u0930 \u0932\u0947\u091f\u0947\u0938\u094d\u091f \u0930\u0928\u093f\u0902\u0917 \u0938\u094d\u091f\u0947\u091f\u0938, \u0926\u0947\u0930\u0940 \u0914\u0930 \u092a\u094d\u0932\u0947\u091f\u092b\u093c\u0949\u0930\u094d\u092e \u0915\u0940 \u091c\u093e\u0928\u0915\u093e\u0930\u0940 \u0926\u0947\u0916\u0947\u0902\u0964', booking: '\u092a\u094d\u0930\u0938\u094d\u0925\u093e\u0928 \u0914\u0930 \u0917\u0902\u0924\u0935\u094d\u092f \u0938\u094d\u091f\u0947\u0936\u0928, \u092f\u093e\u0924\u094d\u0930\u093e \u0924\u093f\u0925\u093f, \u0936\u094d\u0930\u0947\u0923\u0940 \u0914\u0930 \u0915\u094b\u091f\u093e \u091a\u0941\u0928\u0915\u0930 \u091f\u094d\u0930\u0947\u0928 \u0916\u094b\u091c\u0947\u0902\u0964', generic: '\u092e\u0948\u0902 \u092c\u0941\u0915\u093f\u0902\u0917, \u092a\u0940\u090f\u0928\u0906\u0930, \u0930\u093f\u092b\u0902\u0921 \u0914\u0930 \u091f\u094d\u0930\u0947\u0928 \u0938\u094d\u0925\u093f\u0924\u093f \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930 \u0938\u0915\u0924\u093e \u0939\u0942\u0901\u0964 \u0906\u092a \u0915\u094d\u092f\u093e \u091c\u093e\u0928\u0928\u093e \u091a\u093e\u0939\u0947\u0902\u0917\u0947?'}
   },
   kok: {
-    voice: 'kok-IN', recognitionVoice: 'hi-IN', speechVoice: 'hi-IN', title: 'IRCTC Sahayak', demo: 'Demo', placeholder: 'PNR, refund va train vixim vicharat...', send: 'Dhadd', intro: 'Namaskar! Hanv booking, PNR, refund ani train vixim mhaka madat karunk zata.', changed: 'Ata hanv Konknint zap ditlam.', mic: 'Voice input vaprat', speakerOn: 'Voice reply suru karat', speakerOff: 'Voice reply band karat', listening: 'Aikta...', unsupported: 'Hya browserant voice input upolobdh na.', voiceOn: 'Voice reply suru zalo.', quick: [['PNR tapasat', 'pnr'], ['Refund magovat', 'refund'], ['Train vixim', 'status']], replies: { pnr: 'Tumcho 10 ankacho PNR diat, va Home pageacher Check PNR vaprat.', refund: 'Refundak sadharan 5 te 7 kamache dis lagtat. Track a Refund mhaka pragati disat.', status: 'Train Status pageacher latest running status, ushir ani platformachem mhaiti dixtolem.', booking: 'From ani To station, tarikh, class ani quota vhechun Search Trains vaprat.', generic: 'Hanv booking, PNR, refund ani train vixim mhaka madat karunk zata. Tumkam kiteak zai?' }
+    voice: 'kok-IN', recognitionVoice: 'hi-IN', speechVoice: 'hi-IN', title: 'IRCTC Sahayak', demo: 'Demo', placeholder: 'PNR, refund va train vixim vicharat...', send: 'Dhadd', intro: 'Namaskar! Hanv booking, PNR, refund ani train vixim mhaka madat karunk zata.', changed: 'Ata hanv Konknint zap ditlam.', mic: 'Voice input vaprat', speakerOn: 'Voice reply suru karat', speakerOff: 'Voice reply band karat', listening: 'Aikta...', unsupported: 'Hya browserant voice input upolobdh na.', voiceOn: 'Voice reply suru zalo.', quick: [['PNR tapasat', 'pnr'], ['Refund magovat', 'refund'], ['Train vixim', 'status']], replies: { pnr: 'Tumcho 10 ankacho PNR diat, va Home pageacher Check PNR vaprat.', refund: 'Refundak sadharan 5 te 7 kamache dis lagtat. Track a Refund mhaka pragati disat.', status: 'Train Status pageacher latest running status, ushir ani platformachem mhaiti dixtolem.', booking: 'From ani To station, tarikh, class ani quota vhechun Search Trains vaprat.', generic: 'Hanv booking, PNR, refund ani train vixim mhaka madat karunk zata. Tumkam kiteak zai?' },
+    speech: {
+      intro: 'नमस्कार! हांव बुकिंग, पी एन आर, रिफंड आनी ट्रेन विशीं म्हाका मदत करूंक जाता।',
+      changed: 'आता हांव कोंकणीत जाप दितलां।',
+      voiceOn: 'व्हॉइस रिप्लाय सुरू जालो।',
+      replies: {
+        pnr: 'तुमचो दहा अंकाचो पी एन आर दियात, वा होम पेजाचेर चेक पी एन आर वापरात।',
+        refund: 'रिफंडाक साधारण पांच ते सात कामाचे दिस लागतात। ट्रॅक अ रिफंडांत प्रगती दिसता।',
+        status: 'ट्रेन स्टेटस पेजाचेर लेटेस्ट रनिंग स्टेटस, उशीर आनी प्लॅटफॉर्माची म्हायती दिसतली।',
+        booking: 'फ्रॉम आनी टू स्टेशन, तारीख, क्लास आनी कोटा वेंचून सर्च ट्रेन्स वापरात।',
+        generic: 'हांव बुकिंग, पी एन आर, रिफंड आनी ट्रेन विशीं म्हाका मदत करूंक जाता। तुमकां कित्याक जाय?'
+      }
+    }
   },
   ur: {
     voice: 'ur-IN', recognitionVoice: 'ur-PK', speechVoice: 'ur-PK', title: '\u0622\u0626\u06cc \u0622\u0631 \u0633\u06cc \u0679\u06cc \u0633\u06cc \u0645\u0639\u0627\u0648\u0646', demo: '\u0688\u06cc\u0645\u0648', placeholder: '\u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631\u060c \u0631\u0641\u0646\u0688 \u06cc\u0627 \u0679\u0631\u06cc\u0646 \u06a9\u06d2 \u0628\u0627\u0631\u06d2 \u0645\u06cc\u06ba \u067e\u0648\u0686\u06be\u06cc\u06ba...', send: '\u0628\u06be\u06cc\u062c\u06cc\u06ba', intro: '\u0622\u062f\u0627\u0628! \u0645\u06cc\u06ba \u0628\u06a9\u0646\u06af\u060c \u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631\u060c \u0631\u0641\u0646\u0688 \u0627\u0648\u0631 \u0679\u0631\u06cc\u0646 \u06a9\u06cc \u062d\u0627\u0644\u062a \u0645\u06cc\u06ba \u0645\u062f\u062f \u06a9\u0631 \u0633\u06a9\u062a\u0627 \u06c1\u0648\u06ba\u06d4', changed: '\u0627\u0628 \u0645\u06cc\u06ba \u0627\u0631\u062f\u0648 \u0645\u06cc\u06ba \u062c\u0648\u0627\u0628 \u062f\u0648\u06ba \u06af\u0627\u06d4', mic: '\u0648\u0627\u0626\u0633 \u0627\u0646 \u067e\u0679 \u0627\u0633\u062a\u0639\u0645\u0627\u0644 \u06a9\u0631\u06cc\u06ba', speakerOn: '\u0648\u0627\u0626\u0633 \u062c\u0648\u0627\u0628 \u0686\u0627\u0644\u0648 \u06a9\u0631\u06cc\u06ba', speakerOff: '\u0648\u0627\u0626\u0633 \u062c\u0648\u0627\u0628 \u0628\u0646\u062f \u06a9\u0631\u06cc\u06ba', listening: '\u0633\u0646 \u0631\u06c1\u0627 \u06c1\u0648\u06ba...', unsupported: '\u0627\u0633 \u0628\u0631\u0627\u0624\u0632\u0631 \u0645\u06cc\u06ba \u0648\u0627\u0626\u0633 \u0627\u0646 \u067e\u0679 \u062f\u0633\u062a\u06cc\u0627\u0628 \u0646\u06c1\u06cc\u06ba \u06c1\u06d2\u06d4', voiceOn: '\u0648\u0627\u0626\u0633 \u062c\u0648\u0627\u0628 \u0686\u0627\u0644\u0648 \u06c1\u06cc\u06ba\u06d4', quick: [['\u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631 \u0686\u06cc\u06a9 \u06a9\u0631\u06cc\u06ba', 'pnr'], ['\u0631\u0641\u0646\u0688 \u0679\u0631\u06cc\u06a9 \u06a9\u0631\u06cc\u06ba', 'refund'], ['\u0679\u0631\u06cc\u0646 \u06a9\u06cc \u062d\u0627\u0644\u062a', 'status']], replies: { pnr: '\u0627\u067e\u0646\u0627 10 \u06c1\u0646\u062f\u0633\u0648\u06ba \u06a9\u0627 \u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631 \u0628\u062a\u0627\u0626\u06cc\u06ba\u060c \u06cc\u0627 \u06c1\u0648\u0645 \u067e\u06cc\u062c \u067e\u0631 Check PNR \u0627\u0633\u062a\u0639\u0645\u0627\u0644 \u06a9\u0631\u06cc\u06ba\u06d4', refund: '\u0631\u0641\u0646\u0688 \u0645\u06cc\u06ba \u0639\u0627\u0645 \u0637\u0648\u0631 \u067e\u0631 5 \u0633\u06d2 7 \u06a9\u0627\u0631\u0648\u0628\u0627\u0631\u06cc \u062f\u0646 \u0644\u06af\u062a\u06d2 \u06c1\u06cc\u06ba\u06d4 Track a Refund \u0645\u06cc\u06ba \u067e\u06cc\u0634 \u0631\u0641\u062a \u062f\u06cc\u06a9\u06be\u06cc\u06ba\u06d4', status: 'Train Status \u067e\u06cc\u062c \u067e\u0631 \u062a\u0627\u0632\u06c1 \u0631\u0646\u0646\u06af \u0627\u0633\u0679\u06cc\u0679\u0633\u060c \u062a\u0627\u062e\u06cc\u0631 \u0627\u0648\u0631 \u067e\u0644\u06cc\u0679 \u0641\u0627\u0631\u0645 \u06a9\u06cc \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u062f\u06cc\u06a9\u06be\u06cc\u06ba\u06d4', booking: '\u0631\u0648\u0627\u0646\u06af\u06cc \u0627\u0648\u0631 \u0645\u0646\u0632\u0644 \u0627\u0633\u0679\u06cc\u0634\u0646\u060c \u0633\u0641\u0631 \u06a9\u06cc \u062a\u0627\u0631\u06cc\u062e\u060c \u06a9\u0644\u0627\u0633 \u0627\u0648\u0631 \u06a9\u0648\u0679\u06c1 \u0686\u0646\u06c1 \u067e\u06be\u0631 Search Trains \u06a9\u0631\u06cc\u06ba\u06d4', generic: '\u0645\u06cc\u06ba \u0628\u06a9\u0646\u06af\u060c \u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631\u060c \u0631\u0641\u0646\u0688 \u0627\u0648\u0631 \u0679\u0631\u06cc\u0646 \u06a9\u06cc \u062d\u0627\u0644\u062a \u0645\u06cc\u06ba \u0645\u062f\u062f \u06a9\u0631 \u0633\u06a9\u062a\u0627 \u06c1\u0648\u06ba\u06d4 \u0622\u067e \u06a9\u06cc\u0627 \u0686\u06cc\u06a9 \u06a9\u0631\u0646\u0627 \u0686\u0627\u06c1\u06cc\u06ba \u06af\u06d2\u061f' }
@@ -348,6 +360,16 @@ let voiceRepliesEnabled = true;
 let botLanguage = localStorage.getItem('irctc-language') || 'en';
 function getBotLocale() { return BOT_LOCALES[localStorage.getItem('irctc-language') || botLanguage] || BOT_LOCALES.en; }
 function getVoiceChatCopy() { return VOICE_CHAT_COPY[localStorage.getItem('irctc-language') || botLanguage] || VOICE_CHAT_COPY.en; }
+
+function getSpokenBotText(text) {
+  const locale = getBotLocale();
+  if (!locale.speech) return text;
+  if (text === locale.intro) return locale.speech.intro || text;
+  if (text === locale.changed) return locale.speech.changed || text;
+  if (text === locale.voiceOn) return locale.speech.voiceOn || text;
+  const replyKey = Object.keys(locale.replies).find((key) => locale.replies[key] === text);
+  return replyKey && locale.speech.replies[replyKey] ? locale.speech.replies[replyKey] : text;
+}
 
 function speakBotReply(text, onEnd, force = false) {
   if ((!voiceRepliesEnabled && !force) || !('speechSynthesis' in window)) {
@@ -380,7 +402,7 @@ function appendMessage(text, role, speak = false) {
   div.append(role === 'bot' ? avatar : bubble, role === 'bot' ? bubble : avatar);
   helpMessages.appendChild(div);
   helpMessages.scrollTop = helpMessages.scrollHeight;
-  if (role === 'bot' && speak) speakBotReply(text);
+  if (role === 'bot' && speak) speakBotReply(getSpokenBotText(text));
 }
 
 function initHelpBot() {
@@ -460,9 +482,9 @@ function initHelpBot() {
       appendMessage(reply, 'bot');
       if (fromVoiceChat) {
         callAwaitingReply = false;
-        speakBotReply(reply, () => scheduleVoiceChatListening(), true);
+        speakBotReply(getSpokenBotText(reply), () => scheduleVoiceChatListening(), true);
       } else {
-        speakBotReply(reply);
+        speakBotReply(getSpokenBotText(reply));
       }
     }, 350);
   };
