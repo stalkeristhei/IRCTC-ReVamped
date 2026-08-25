@@ -402,6 +402,42 @@ function initHelpBot() {
   let callRecognition = null;
   let callRestartTimer = null;
   let callAwaitingReply = false;
+  const voiceError = (reason) => {
+    const language = localStorage.getItem('irctc-language') || botLanguage;
+    const messages = {
+      en: {
+        permission: 'Allow microphone access in your browser, then start the voice chat again.',
+        microphone: 'No microphone was detected. Connect one and try again.',
+        network: 'Voice recognition needs an internet connection. Check your connection and try again.',
+        unavailable: 'Voice recognition is unavailable here. Use the latest Chrome or Edge with microphone permission enabled.',
+        noSpeech: 'I did not hear anything — still listening.'
+      },
+      hi: {
+        permission: '\u092c\u094d\u0930\u093e\u0909\u091c\u093c\u0930 \u092e\u0947\u0902 \u092e\u093e\u0908\u0915\u094d\u0930\u094b\u092b\u094b\u0928 \u0915\u0940 \u0905\u0928\u0941\u092e\u0924\u093f \u0926\u0947\u0902, \u092b\u093f\u0930 \u0935\u0949\u0907\u0938 \u091a\u0948\u091f \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902\u0964',
+        microphone: '\u092e\u093e\u0908\u0915\u094d\u0930\u094b\u092b\u094b\u0928 \u0928\u0939\u0940\u0902 \u092e\u093f\u0932\u093e\u0964 \u0915\u0943\u092a\u092f\u093e \u0909\u0938\u0947 \u0915\u0928\u0947\u0915\u094d\u091f \u0915\u0930\u0947\u0902\u0964',
+        network: '\u0935\u0949\u0907\u0938 \u0930\u093f\u0915\u0917\u0928\u093f\u0936\u0928 \u0915\u0947 \u0932\u093f\u090f \u0907\u0902\u091f\u0930\u0928\u0947\u091f \u0915\u0928\u0947\u0915\u094d\u0936\u0928 \u091a\u093e\u0939\u093f\u090f\u0964',
+        unavailable: '\u0935\u0949\u0907\u0938 \u0930\u093f\u0915\u0917\u0928\u093f\u0936\u0928 \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964 \u092e\u093e\u0908\u0915\u094d\u0930\u094b\u092b\u094b\u0928 \u0905\u0928\u0941\u092e\u0924\u093f \u0915\u0947 \u0938\u093e\u0925 \u0928\u092f\u093e Chrome \u092f\u093e Edge \u0907\u0938\u094d\u0924\u0947\u092e\u093e\u0932 \u0915\u0930\u0947\u0902\u0964',
+        noSpeech: '\u0906\u0935\u093e\u091c\u093c \u0938\u0941\u0928\u093e\u0908 \u0928\u0939\u0940\u0902 \u0926\u0940 — \u092e\u0948\u0902 \u0938\u0941\u0928 \u0930\u0939\u093e \u0939\u0942\u0901\u0964'
+      }
+    };
+    return (messages[language] || messages.en)[reason] || (messages[language] || messages.en).unavailable;
+  };
+
+  const setVoiceChatStatus = (text) => {
+    voiceChatStatus.hidden = false;
+    voiceChatLabel.textContent = text;
+  };
+
+  const requestMicrophoneAccess = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return true;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((track) => track.stop());
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
 
   const replyFor = (text, topic) => {
     if (topic) return getBotLocale().replies[topic];
@@ -459,7 +495,7 @@ function initHelpBot() {
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     recognition.addEventListener('start', () => {
-      voiceChatLabel.textContent = getVoiceChatCopy().active;
+      setVoiceChatStatus(getVoiceChatCopy().active);
       callButton.classList.add('is-listening');
     });
     recognition.addEventListener('result', (event) => {
@@ -476,18 +512,37 @@ function initHelpBot() {
     recognition.addEventListener('error', (event) => {
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         stopVoiceChat();
-        appendMessage(getBotLocale().unsupported, 'bot');
+        appendMessage(voiceError('permission'), 'bot');
+      } else if (event.error === 'audio-capture') {
+        stopVoiceChat();
+        appendMessage(voiceError('microphone'), 'bot');
+      } else if (event.error === 'network') {
+        stopVoiceChat();
+        appendMessage(voiceError('network'), 'bot');
+      } else if (event.error === 'no-speech') {
+        setVoiceChatStatus(voiceError('noSpeech'));
       }
     });
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (error) {
+      callRecognition = null;
+      stopVoiceChat();
+      appendMessage(voiceError('unavailable'), 'bot');
+    }
   };
 
-  const startVoiceChat = () => {
-    if (!Recognition) return appendMessage(getBotLocale().unsupported, 'bot');
+  const startVoiceChat = async () => {
+    if (!Recognition) return appendMessage(voiceError('unavailable'), 'bot');
+    setVoiceChatStatus(getVoiceChatCopy().active);
+    if (!(await requestMicrophoneAccess())) {
+      voiceChatStatus.hidden = true;
+      appendMessage(voiceError('permission'), 'bot');
+      return;
+    }
     voiceRepliesEnabled = true;
     voiceChatActive = true;
-    voiceChatStatus.hidden = false;
-    voiceChatLabel.textContent = getVoiceChatCopy().active;
+    setVoiceChatStatus(getVoiceChatCopy().active);
     callButton.classList.add('is-in-call');
     callButton.setAttribute('aria-pressed', 'true');
     callButton.setAttribute('aria-label', getVoiceChatCopy().end);
@@ -518,8 +573,9 @@ function initHelpBot() {
   };
 
   helpForm.addEventListener('submit', (event) => { event.preventDefault(); sendMessage(input.value.trim()); });
-  micButton.addEventListener('click', () => {
-    if (!Recognition) return appendMessage(getBotLocale().unsupported, 'bot');
+  micButton.addEventListener('click', async () => {
+    if (!Recognition) return appendMessage(voiceError('unavailable'), 'bot');
+    if (!(await requestMicrophoneAccess())) return appendMessage(voiceError('permission'), 'bot');
     const recognition = new Recognition();
     recognition.lang = getBotLocale().voice;
     recognition.interimResults = false;
@@ -527,8 +583,20 @@ function initHelpBot() {
     micButton.classList.add('is-listening');
     recognition.addEventListener('result', (event) => sendMessage(event.results[0][0].transcript.trim()));
     recognition.addEventListener('end', () => { micButton.classList.remove('is-listening'); renderLocale(); });
-    recognition.addEventListener('error', () => { micButton.classList.remove('is-listening'); renderLocale(); });
-    recognition.start();
+    recognition.addEventListener('error', (event) => {
+      micButton.classList.remove('is-listening');
+      renderLocale();
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') appendMessage(voiceError('permission'), 'bot');
+      else if (event.error === 'audio-capture') appendMessage(voiceError('microphone'), 'bot');
+      else if (event.error === 'network') appendMessage(voiceError('network'), 'bot');
+    });
+    try {
+      recognition.start();
+    } catch (error) {
+      micButton.classList.remove('is-listening');
+      renderLocale();
+      appendMessage(voiceError('unavailable'), 'bot');
+    }
   });
   speakerButton.addEventListener('click', () => {
     voiceRepliesEnabled = !voiceRepliesEnabled;
