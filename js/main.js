@@ -408,14 +408,16 @@ function initHelpBot() {
       en: {
         permission: 'Allow microphone access in your browser, then start the voice chat again.',
         microphone: 'No microphone was detected. Connect one and try again.',
-        network: 'Voice recognition needs an internet connection. Check your connection and try again.',
+        network: 'The browser speech-recognition service could not be reached. Your internet may be working; try Chrome or Edge without a VPN or ad blocker, or continue in text chat.',
+        language: 'Your browser speech-recognition service does not support the selected language. You can continue in text chat or choose another site language for voice input.',
         unavailable: 'Voice recognition is unavailable here. Use the latest Chrome or Edge with microphone permission enabled.',
         noSpeech: 'I did not hear anything — still listening.'
       },
       hi: {
         permission: '\u092c\u094d\u0930\u093e\u0909\u091c\u093c\u0930 \u092e\u0947\u0902 \u092e\u093e\u0908\u0915\u094d\u0930\u094b\u092b\u094b\u0928 \u0915\u0940 \u0905\u0928\u0941\u092e\u0924\u093f \u0926\u0947\u0902, \u092b\u093f\u0930 \u0935\u0949\u0907\u0938 \u091a\u0948\u091f \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902\u0964',
         microphone: '\u092e\u093e\u0908\u0915\u094d\u0930\u094b\u092b\u094b\u0928 \u0928\u0939\u0940\u0902 \u092e\u093f\u0932\u093e\u0964 \u0915\u0943\u092a\u092f\u093e \u0909\u0938\u0947 \u0915\u0928\u0947\u0915\u094d\u091f \u0915\u0930\u0947\u0902\u0964',
-        network: '\u0935\u0949\u0907\u0938 \u0930\u093f\u0915\u0917\u0928\u093f\u0936\u0928 \u0915\u0947 \u0932\u093f\u090f \u0907\u0902\u091f\u0930\u0928\u0947\u091f \u0915\u0928\u0947\u0915\u094d\u0936\u0928 \u091a\u093e\u0939\u093f\u090f\u0964',
+        network: '\u092c\u094d\u0930\u093e\u0909\u091c\u093c\u0930 \u0915\u0940 \u0935\u0949\u0907\u0938-\u0930\u093f\u0915\u0917\u0928\u093f\u0936\u0928 \u0938\u0947\u0935\u093e \u0924\u0915 \u092a\u0939\u0941\u0902\u091a \u0928\u0939\u0940\u0902 \u0939\u094b \u092a\u093e \u0930\u0939\u0940 \u0939\u0948\u0964 \u0906\u092a\u0915\u093e \u0907\u0902\u091f\u0930\u0928\u0947\u091f \u0920\u0940\u0915 \u0939\u094b \u0938\u0915\u0924\u093e \u0939\u0948\u0964',
+        language: '\u091a\u0941\u0928\u0940 \u0917\u0908 \u092d\u093e\u0937\u093e \u0915\u0947 \u0932\u093f\u090f \u092c\u094d\u0930\u093e\u0909\u091c\u093c\u0930 \u092e\u0947\u0902 \u0935\u0949\u0907\u0938 \u0930\u093f\u0915\u0917\u0928\u093f\u0936\u0928 \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964',
         unavailable: '\u0935\u0949\u0907\u0938 \u0930\u093f\u0915\u0917\u0928\u093f\u0936\u0928 \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964 \u092e\u093e\u0908\u0915\u094d\u0930\u094b\u092b\u094b\u0928 \u0905\u0928\u0941\u092e\u0924\u093f \u0915\u0947 \u0938\u093e\u0925 \u0928\u092f\u093e Chrome \u092f\u093e Edge \u0907\u0938\u094d\u0924\u0947\u092e\u093e\u0932 \u0915\u0930\u0947\u0902\u0964',
         noSpeech: '\u0906\u0935\u093e\u091c\u093c \u0938\u0941\u0928\u093e\u0908 \u0928\u0939\u0940\u0902 \u0926\u0940 — \u092e\u0948\u0902 \u0938\u0941\u0928 \u0930\u0939\u093e \u0939\u0942\u0901\u0964'
       }
@@ -510,6 +512,7 @@ function initHelpBot() {
       if (voiceChatActive && !callAwaitingReply) scheduleVoiceChatListening();
     });
     recognition.addEventListener('error', (event) => {
+      console.warn('Voice recognition error:', event.error, event.message || '');
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         stopVoiceChat();
         appendMessage(voiceError('permission'), 'bot');
@@ -519,6 +522,9 @@ function initHelpBot() {
       } else if (event.error === 'network') {
         stopVoiceChat();
         appendMessage(voiceError('network'), 'bot');
+      } else if (event.error === 'language-not-supported') {
+        stopVoiceChat();
+        appendMessage(voiceError('language'), 'bot');
       } else if (event.error === 'no-speech') {
         setVoiceChatStatus(voiceError('noSpeech'));
       }
@@ -584,11 +590,13 @@ function initHelpBot() {
     recognition.addEventListener('result', (event) => sendMessage(event.results[0][0].transcript.trim()));
     recognition.addEventListener('end', () => { micButton.classList.remove('is-listening'); renderLocale(); });
     recognition.addEventListener('error', (event) => {
+      console.warn('Voice recognition error:', event.error, event.message || '');
       micButton.classList.remove('is-listening');
       renderLocale();
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') appendMessage(voiceError('permission'), 'bot');
       else if (event.error === 'audio-capture') appendMessage(voiceError('microphone'), 'bot');
       else if (event.error === 'network') appendMessage(voiceError('network'), 'bot');
+      else if (event.error === 'language-not-supported') appendMessage(voiceError('language'), 'bot');
     });
     try {
       recognition.start();
