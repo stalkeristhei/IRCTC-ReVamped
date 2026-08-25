@@ -186,7 +186,6 @@
         <div class="help-quick-replies" id="help-quick-replies" aria-label="Quick replies"></div>
         <form class="help-form" id="help-form">
           <input class="field-input" type="text" id="help-input" placeholder="Ask about PNR, refunds…" autocomplete="off" required>
-          <button type="button" class="help-icon-btn" id="help-mic" aria-label="Use voice input">&#127908;</button>
           <button type="submit" class="btn-primary" id="help-send">SEND</button>
         </form>
       </div>
@@ -219,6 +218,8 @@
     const panel = document.getElementById('rail-pet-panel');
     document.getElementById('rail-pet-close').addEventListener('click', () => {
       panel.hidden = true;
+      pet.classList.remove('is-open');
+      window.dispatchEvent(new CustomEvent('irctc-assistant-close'));
     });
     face.addEventListener('click', () => {
       if (face.dataset.dragged === '1') {
@@ -226,6 +227,8 @@
         return;
       }
       panel.hidden = !panel.hidden;
+      pet.classList.toggle('is-open', !panel.hidden);
+      window.dispatchEvent(new CustomEvent(panel.hidden ? 'irctc-assistant-close' : 'irctc-assistant-open'));
     });
 
     let dragging = false;

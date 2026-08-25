@@ -340,7 +340,7 @@ const BOT_LOCALES = {
         refund: 'रिफंडाक साधारण पांच ते सात कामाचे दिस लागतात। ट्रॅक अ रिफंडांत प्रगती दिसता।',
         status: 'ट्रेन स्टेटस पेजाचेर लेटेस्ट रनिंग स्टेटस, उशीर आनी प्लॅटफॉर्माची म्हायती दिसतली।',
         booking: 'फ्रॉम आनी टू स्टेशन, तारीख, क्लास आनी कोटा वेंचून सर्च ट्रेन्स वापरात।',
-        generic: 'हांव बुकिंग, पी एन आर, रिफंड आनी ट्रेन विशीं म्हाका मदत करूंक जाता। तुमकां कित्याक जाय?'
+        generic: 'हांव बुकिंग, पी एन आर, रिफंड आनी ट्रेन विशीं म्हाका मदत करूंक जाता। तुमकां कित जाय?'
       }
     }
   },
@@ -376,15 +376,18 @@ function speakBotReply(text, onEnd, force = false) {
     if (onEnd) onEnd();
     return;
   }
+  const language = localStorage.getItem('irctc-language') || botLanguage;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = getBotLocale().speechVoice || getBotLocale().voice;
+  utterance.rate = language === 'en' ? 0.98 : 0.88;
+  utterance.pitch = 1;
+  utterance.volume = 1;
   const voice = speechSynthesis.getVoices().find((item) => item.lang.toLowerCase().startsWith(utterance.lang.slice(0, 2).toLowerCase()));
   if (voice) utterance.voice = voice;
   if (onEnd) {
     utterance.addEventListener('end', onEnd, { once: true });
     utterance.addEventListener('error', onEnd, { once: true });
   }
-  speechSynthesis.cancel();
   speechSynthesis.speak(utterance);
 }
 
@@ -413,7 +416,6 @@ function initHelpBot() {
   const title = document.getElementById('help-title');
   const demo = document.getElementById('help-demo');
   const sendButton = document.getElementById('help-send');
-  const micButton = document.getElementById('help-mic');
   const speakerButton = document.getElementById('help-speaker');
   const callButton = document.getElementById('help-call');
   const voiceChatStatus = document.getElementById('voice-chat-status');
@@ -584,7 +586,6 @@ function initHelpBot() {
     demo.textContent = locale.demo;
     input.placeholder = locale.placeholder;
     sendButton.textContent = locale.send;
-    micButton.setAttribute('aria-label', locale.mic);
     speakerButton.setAttribute('aria-label', voiceRepliesEnabled ? locale.speakerOff : locale.speakerOn);
     speakerButton.setAttribute('aria-pressed', String(voiceRepliesEnabled));
     callButton.setAttribute('aria-label', voiceChatActive ? getVoiceChatCopy().end : getVoiceChatCopy().start);
@@ -601,33 +602,6 @@ function initHelpBot() {
   };
 
   helpForm.addEventListener('submit', (event) => { event.preventDefault(); sendMessage(input.value.trim()); });
-  micButton.addEventListener('click', async () => {
-    if (!Recognition) return appendMessage(voiceError('unavailable'), 'bot');
-    if (!(await requestMicrophoneAccess())) return appendMessage(voiceError('permission'), 'bot');
-    const recognition = new Recognition();
-    recognition.lang = getBotLocale().recognitionVoice || getBotLocale().voice;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    micButton.classList.add('is-listening');
-    recognition.addEventListener('result', (event) => sendMessage(event.results[0][0].transcript.trim()));
-    recognition.addEventListener('end', () => { micButton.classList.remove('is-listening'); renderLocale(); });
-    recognition.addEventListener('error', (event) => {
-      console.warn('Voice recognition error:', event.error, event.message || '');
-      micButton.classList.remove('is-listening');
-      renderLocale();
-      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') appendMessage(voiceError('permission'), 'bot');
-      else if (event.error === 'audio-capture') appendMessage(voiceError('microphone'), 'bot');
-      else if (event.error === 'network') appendMessage(voiceError('network'), 'bot');
-      else if (event.error === 'language-not-supported') appendMessage(voiceError('language'), 'bot');
-    });
-    try {
-      recognition.start();
-    } catch (error) {
-      micButton.classList.remove('is-listening');
-      renderLocale();
-      appendMessage(voiceError('unavailable'), 'bot');
-    }
-  });
   speakerButton.addEventListener('click', () => {
     voiceRepliesEnabled = !voiceRepliesEnabled;
     if (!voiceRepliesEnabled && 'speechSynthesis' in window) speechSynthesis.cancel();
@@ -645,6 +619,9 @@ function initHelpBot() {
     botLanguage = event.detail;
     renderLocale();
     if (changed) appendMessage(getBotLocale().changed, 'bot', voiceRepliesEnabled);
+  });
+  window.addEventListener('irctc-assistant-close', () => {
+    stopVoiceChat();
   });
 }
 initHelpBot();

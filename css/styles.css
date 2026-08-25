@@ -1967,7 +1967,9 @@ body::after {
   animation: pet-bob 3s ease-in-out infinite;
 }
 .rail-pet-face:active { cursor: grabbing; }
-.rail-pet-dot { width: 8px; height: 8px; border-radius: 50%; background: #7dcea0; box-shadow: 0 0 8px #7dcea0; }
+.rail-pet-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); }
+.rail-pet.is-open .rail-pet-dot { background: #7dcea0; box-shadow: 0 0 8px #7dcea0; }
+.rail-pet:not(.is-open) .rail-pet-face { animation: none; }
 .rail-pet-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.06em; }
 @keyframes pet-bob {
   0%, 100% { transform: translateY(0); }
