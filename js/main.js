@@ -43,6 +43,29 @@ const STATIONS = [
   'Gwalior (GWL)',
   'Jhansi (JHS)',
   'Agra Cantt (AGC)',
+  'Ajmer Junction (AII)',
+  'Aligarh Junction (ALJN)',
+  'Bandra Terminus (BDTS)',
+  'Bareilly (BE)',
+  'Bikaner Junction (BKN)',
+  'Bilaspur Junction (BSP)',
+  'Dadar Central (DR)',
+  'Dehradun (DDN)',
+  'Gandhinagar Capital (GNC)',
+  'Gaya Junction (GAYA)',
+  'Jabalpur Junction (JBP)',
+  'Jodhpur Junction (JU)',
+  'Kacheguda (KCG)',
+  'Kozhikode (CLT)',
+  'Ludhiana Junction (LDH)',
+  'Mangaluru Central (MAQ)',
+  'Mysuru Junction (MYS)',
+  'Nashik Road (NK)',
+  'Rajendra Nagar Terminal (RJPB)',
+  'Rajkot Junction (RJT)',
+  'Siliguri Junction (SGUJ)',
+  'Tiruchchirappalli Junction (TPJ)',
+  'Vadodara Junction (BRC)',
 ];
 
 function updateClock() {
@@ -78,6 +101,108 @@ function fillStationLists() {
   });
 }
 fillStationLists();
+
+function initStationPickers() {
+  const normalize = (value) => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  document.querySelectorAll('input[list="station-list"]').forEach((input) => {
+    if (input.closest('.station-picker')) return;
+
+    const picker = document.createElement('div');
+    picker.className = 'station-picker';
+    input.parentNode.insertBefore(picker, input);
+    picker.appendChild(input);
+    input.removeAttribute('list');
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-expanded', 'false');
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'station-picker-toggle';
+    toggle.setAttribute('aria-label', 'Show station list');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '&#8964;';
+
+    const options = document.createElement('div');
+    options.className = 'station-options';
+    options.setAttribute('role', 'listbox');
+    options.hidden = true;
+    picker.append(toggle, options);
+
+    let matches = STATIONS;
+    let activeIndex = -1;
+
+    const close = () => {
+      options.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-expanded', 'false');
+      activeIndex = -1;
+    };
+
+    const choose = (station) => {
+      input.value = station;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      close();
+      input.focus();
+    };
+
+    const render = (query = '') => {
+      const term = normalize(query);
+      matches = term
+        ? STATIONS.filter((station) => normalize(station).includes(term))
+        : STATIONS;
+      activeIndex = -1;
+      options.replaceChildren();
+      matches.slice(0, 8).forEach((station) => {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'station-option';
+        option.setAttribute('role', 'option');
+        option.textContent = station;
+        option.addEventListener('mousedown', (event) => event.preventDefault());
+        option.addEventListener('click', () => choose(station));
+        options.appendChild(option);
+      });
+      if (!matches.length) {
+        const empty = document.createElement('p');
+        empty.className = 'station-empty';
+        empty.textContent = 'No matching station';
+        options.appendChild(empty);
+      }
+      options.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-expanded', 'true');
+    };
+
+    input.addEventListener('focus', () => render());
+    input.addEventListener('input', () => render(input.value));
+    toggle.addEventListener('click', () => (options.hidden ? render() : close()));
+    input.addEventListener('keydown', (event) => {
+      const visibleMatches = matches.slice(0, 8);
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (options.hidden) render(input.value);
+        activeIndex = event.key === 'ArrowDown'
+          ? Math.min(activeIndex + 1, visibleMatches.length - 1)
+          : Math.max(activeIndex - 1, 0);
+        options.querySelectorAll('.station-option').forEach((option, index) => {
+          option.classList.toggle('is-active', index === activeIndex);
+        });
+      } else if (event.key === 'Enter' && activeIndex >= 0) {
+        event.preventDefault();
+        choose(visibleMatches[activeIndex]);
+      } else if (event.key === 'Escape') {
+        close();
+      }
+    });
+    document.addEventListener('click', (event) => {
+      if (!picker.contains(event.target)) close();
+    });
+  });
+}
+initStationPickers();
 
 const dateInput = document.getElementById('date') || document.getElementById('vacancy-date');
 if (dateInput && dateInput.type === 'date') {
@@ -189,45 +314,239 @@ function initTrainFilters() {
 }
 initTrainFilters();
 
-const botReplies = [
-  'I can help with PNR status, refunds, and train delays. What do you need?',
-  'For PNR checks, use Home → Check PNR, or share your 10-digit PNR here.',
-  'Refunds usually take 5–7 working days. Track them under Track a Refund.',
-  'If your train is delayed, live status updates appear on the Train Status page.',
-  'For cancellation rules, visit Refund Tracker → View Refund Rules.',
-  'I\'m a demo assistant — full AI support is coming soon. Try PNR, refund, or delay.',
-];
-let replyIndex = 0;
+const BOT_LOCALES = {
+  en: {
+    voice: 'en-IN', title: 'IRCTC Assistant', demo: 'Demo', placeholder: 'Ask about PNR, refunds...', send: 'Send',
+    intro: 'Hi! I can help with bookings, PNR, refunds, and train status.', changed: 'I will now reply in English.',
+    mic: 'Use voice input', speakerOn: 'Turn voice replies on', speakerOff: 'Turn voice replies off', listening: 'Listening...', unsupported: 'Voice input is not available in this browser.', voiceOn: 'Voice replies are on.',
+    quick: [['Check PNR', 'pnr'], ['Track refund', 'refund'], ['Train status', 'status']],
+    replies: { pnr: 'Share your 10-digit PNR, or open Check PNR from the home page to view your booking status.', refund: 'Refunds usually take 5 to 7 working days. You can follow the progress under Track a Refund.', status: 'Open Train Status to see the latest running status, delay, and platform information.', booking: 'Choose your From and To stations, travel date, class, and quota, then select Search Trains.', generic: 'I can help with bookings, PNR, refunds, and train status. Which one would you like to check?' }
+  },
+  hi: {
+    voice: 'hi-IN', title: '\u0906\u0908\u0906\u0930\u0938\u0940\u091f\u0940\u0938\u0940 \u0938\u0939\u093e\u092f\u0915', demo: '\u0921\u0947\u092e\u094b', placeholder: '\u092a\u0940\u090f\u0928\u0906\u0930, \u0930\u093f\u092b\u0902\u0921 \u092f\u093e \u091f\u094d\u0930\u0947\u0928 \u0915\u0947 \u092c\u093e\u0930\u0947 \u092e\u0947\u0902 \u092a\u0942\u091b\u0947\u0902...', send: '\u092d\u0947\u091c\u0947\u0902',
+    intro: '\u0928\u092e\u0938\u094d\u0924\u0947! \u092e\u0948\u0902 \u092c\u0941\u0915\u093f\u0902\u0917, \u092a\u0940\u090f\u0928\u0906\u0930, \u0930\u093f\u092b\u0902\u0921 \u0914\u0930 \u091f\u094d\u0930\u0947\u0928 \u0938\u094d\u0925\u093f\u0924\u093f \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930 \u0938\u0915\u0924\u093e \u0939\u0942\u0901\u0964', changed: '\u0905\u092c \u092e\u0948\u0902 \u0939\u093f\u0928\u094d\u0926\u0940 \u092e\u0947\u0902 \u091c\u0935\u093e\u092c \u0926\u0942\u0901\u0917\u093e\u0964',
+    mic: '\u0935\u0949\u0907\u0938 \u0907\u0928\u092a\u0941\u091f \u0915\u0930\u0947\u0902', speakerOn: '\u0935\u0949\u0907\u0938 \u0930\u093f\u092a\u094d\u0932\u093e\u0908 \u091a\u093e\u0932\u0942 \u0915\u0930\u0947\u0902', speakerOff: '\u0935\u0949\u0907\u0938 \u0930\u093f\u092a\u094d\u0932\u093e\u0908 \u092c\u0902\u0926 \u0915\u0930\u0947\u0902', listening: '\u0938\u0941\u0928 \u0930\u0939\u093e \u0939\u0942\u0901...', unsupported: '\u0907\u0938 \u092c\u094d\u0930\u093e\u0909\u091c\u093c\u0930 \u092e\u0947\u0902 \u0935\u0949\u0907\u0938 \u0907\u0928\u092a\u0941\u091f \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964', voiceOn: '\u0935\u0949\u0907\u0938 \u0930\u093f\u092a\u094d\u0932\u093e\u0908 \u091a\u093e\u0932\u0942 \u0939\u0948\u0902\u0964',
+    quick: [['\u092a\u0940\u090f\u0928\u0906\u0930 \u091c\u093e\u0902\u091a\u0947\u0902', 'pnr'], ['\u0930\u093f\u092b\u0902\u0921 \u091f\u094d\u0930\u0948\u0915 \u0915\u0930\u0947\u0902', 'refund'], ['\u091f\u094d\u0930\u0947\u0928 \u0938\u094d\u0925\u093f\u0924\u093f', 'status']],
+    replies: { pnr: '\u0905\u092a\u0928\u093e 10 \u0905\u0902\u0915\u094b\u0902 \u0915\u093e \u092a\u0940\u090f\u0928\u0906\u0930 \u0938\u093e\u091d\u093e \u0915\u0930\u0947\u0902, \u092f\u093e \u0939\u094b\u092e \u092a\u0947\u091c \u092a\u0930 \u092a\u0940\u090f\u0928\u0906\u0930 \u091c\u093e\u0902\u091a\u0947\u0902\u0964', refund: '\u0930\u093f\u092b\u0902\u0921 \u092e\u0947\u0902 \u0906\u092e\u0924\u094c\u0930 \u092a\u0930 5 \u0938\u0947 7 \u0915\u093e\u0930\u094d\u092f \u0926\u093f\u0935\u0938 \u0932\u0917\u0924\u0947 \u0939\u0948\u0902\u0964 \u091f\u094d\u0930\u0948\u0915 \u0905 \u0930\u093f\u092b\u0902\u0921 \u092e\u0947\u0902 \u092a\u094d\u0930\u0917\u0924\u093f \u0926\u0947\u0916\u0947\u0902\u0964', status: '\u091f\u094d\u0930\u0947\u0928 \u0938\u094d\u0925\u093f\u0924\u093f \u092a\u0947\u091c \u092a\u0930 \u0932\u0947\u091f\u0947\u0938\u094d\u091f \u0930\u0928\u093f\u0902\u0917 \u0938\u094d\u091f\u0947\u091f\u0938, \u0926\u0947\u0930\u0940 \u0914\u0930 \u092a\u094d\u0932\u0947\u091f\u092b\u093c\u0949\u0930\u094d\u092e \u0915\u0940 \u091c\u093e\u0928\u0915\u093e\u0930\u0940 \u0926\u0947\u0916\u0947\u0902\u0964', booking: '\u092a\u094d\u0930\u0938\u094d\u0925\u093e\u0928 \u0914\u0930 \u0917\u0902\u0924\u0935\u094d\u092f \u0938\u094d\u091f\u0947\u0936\u0928, \u092f\u093e\u0924\u094d\u0930\u093e \u0924\u093f\u0925\u093f, \u0936\u094d\u0930\u0947\u0923\u0940 \u0914\u0930 \u0915\u094b\u091f\u093e \u091a\u0941\u0928\u0915\u0930 \u091f\u094d\u0930\u0947\u0928 \u0916\u094b\u091c\u0947\u0902\u0964', generic: '\u092e\u0948\u0902 \u092c\u0941\u0915\u093f\u0902\u0917, \u092a\u0940\u090f\u0928\u0906\u0930, \u0930\u093f\u092b\u0902\u0921 \u0914\u0930 \u091f\u094d\u0930\u0947\u0928 \u0938\u094d\u0925\u093f\u0924\u093f \u092e\u0947\u0902 \u092e\u0926\u0926 \u0915\u0930 \u0938\u0915\u0924\u093e \u0939\u0942\u0901\u0964 \u0906\u092a \u0915\u094d\u092f\u093e \u091c\u093e\u0928\u0928\u093e \u091a\u093e\u0939\u0947\u0902\u0917\u0947?'}
+  },
+  kok: {
+    voice: 'kok-IN', title: 'IRCTC Sahayak', demo: 'Demo', placeholder: 'PNR, refund va train vixim vicharat...', send: 'Dhadd', intro: 'Namaskar! Hanv booking, PNR, refund ani train vixim mhaka madat karunk zata.', changed: 'Ata hanv Konknint zap ditlam.', mic: 'Voice input vaprat', speakerOn: 'Voice reply suru karat', speakerOff: 'Voice reply band karat', listening: 'Aikta...', unsupported: 'Hya browserant voice input upolobdh na.', voiceOn: 'Voice reply suru zalo.', quick: [['PNR tapasat', 'pnr'], ['Refund magovat', 'refund'], ['Train vixim', 'status']], replies: { pnr: 'Tumcho 10 ankacho PNR diat, va Home pageacher Check PNR vaprat.', refund: 'Refundak sadharan 5 te 7 kamache dis lagtat. Track a Refund mhaka pragati disat.', status: 'Train Status pageacher latest running status, ushir ani platformachem mhaiti dixtolem.', booking: 'From ani To station, tarikh, class ani quota vhechun Search Trains vaprat.', generic: 'Hanv booking, PNR, refund ani train vixim mhaka madat karunk zata. Tumkam kiteak zai?' }
+  },
+  ur: {
+    voice: 'ur-IN', title: '\u0622\u0626\u06cc \u0622\u0631 \u0633\u06cc \u0679\u06cc \u0633\u06cc \u0645\u0639\u0627\u0648\u0646', demo: '\u0688\u06cc\u0645\u0648', placeholder: '\u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631\u060c \u0631\u0641\u0646\u0688 \u06cc\u0627 \u0679\u0631\u06cc\u0646 \u06a9\u06d2 \u0628\u0627\u0631\u06d2 \u0645\u06cc\u06ba \u067e\u0648\u0686\u06be\u06cc\u06ba...', send: '\u0628\u06be\u06cc\u062c\u06cc\u06ba', intro: '\u0622\u062f\u0627\u0628! \u0645\u06cc\u06ba \u0628\u06a9\u0646\u06af\u060c \u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631\u060c \u0631\u0641\u0646\u0688 \u0627\u0648\u0631 \u0679\u0631\u06cc\u0646 \u06a9\u06cc \u062d\u0627\u0644\u062a \u0645\u06cc\u06ba \u0645\u062f\u062f \u06a9\u0631 \u0633\u06a9\u062a\u0627 \u06c1\u0648\u06ba\u06d4', changed: '\u0627\u0628 \u0645\u06cc\u06ba \u0627\u0631\u062f\u0648 \u0645\u06cc\u06ba \u062c\u0648\u0627\u0628 \u062f\u0648\u06ba \u06af\u0627\u06d4', mic: '\u0648\u0627\u0626\u0633 \u0627\u0646 \u067e\u0679 \u0627\u0633\u062a\u0639\u0645\u0627\u0644 \u06a9\u0631\u06cc\u06ba', speakerOn: '\u0648\u0627\u0626\u0633 \u062c\u0648\u0627\u0628 \u0686\u0627\u0644\u0648 \u06a9\u0631\u06cc\u06ba', speakerOff: '\u0648\u0627\u0626\u0633 \u062c\u0648\u0627\u0628 \u0628\u0646\u062f \u06a9\u0631\u06cc\u06ba', listening: '\u0633\u0646 \u0631\u06c1\u0627 \u06c1\u0648\u06ba...', unsupported: '\u0627\u0633 \u0628\u0631\u0627\u0624\u0632\u0631 \u0645\u06cc\u06ba \u0648\u0627\u0626\u0633 \u0627\u0646 \u067e\u0679 \u062f\u0633\u062a\u06cc\u0627\u0628 \u0646\u06c1\u06cc\u06ba \u06c1\u06d2\u06d4', voiceOn: '\u0648\u0627\u0626\u0633 \u062c\u0648\u0627\u0628 \u0686\u0627\u0644\u0648 \u06c1\u06cc\u06ba\u06d4', quick: [['\u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631 \u0686\u06cc\u06a9 \u06a9\u0631\u06cc\u06ba', 'pnr'], ['\u0631\u0641\u0646\u0688 \u0679\u0631\u06cc\u06a9 \u06a9\u0631\u06cc\u06ba', 'refund'], ['\u0679\u0631\u06cc\u0646 \u06a9\u06cc \u062d\u0627\u0644\u062a', 'status']], replies: { pnr: '\u0627\u067e\u0646\u0627 10 \u06c1\u0646\u062f\u0633\u0648\u06ba \u06a9\u0627 \u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631 \u0628\u062a\u0627\u0626\u06cc\u06ba\u060c \u06cc\u0627 \u06c1\u0648\u0645 \u067e\u06cc\u062c \u067e\u0631 Check PNR \u0627\u0633\u062a\u0639\u0645\u0627\u0644 \u06a9\u0631\u06cc\u06ba\u06d4', refund: '\u0631\u0641\u0646\u0688 \u0645\u06cc\u06ba \u0639\u0627\u0645 \u0637\u0648\u0631 \u067e\u0631 5 \u0633\u06d2 7 \u06a9\u0627\u0631\u0648\u0628\u0627\u0631\u06cc \u062f\u0646 \u0644\u06af\u062a\u06d2 \u06c1\u06cc\u06ba\u06d4 Track a Refund \u0645\u06cc\u06ba \u067e\u06cc\u0634 \u0631\u0641\u062a \u062f\u06cc\u06a9\u06be\u06cc\u06ba\u06d4', status: 'Train Status \u067e\u06cc\u062c \u067e\u0631 \u062a\u0627\u0632\u06c1 \u0631\u0646\u0646\u06af \u0627\u0633\u0679\u06cc\u0679\u0633\u060c \u062a\u0627\u062e\u06cc\u0631 \u0627\u0648\u0631 \u067e\u0644\u06cc\u0679 \u0641\u0627\u0631\u0645 \u06a9\u06cc \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u062f\u06cc\u06a9\u06be\u06cc\u06ba\u06d4', booking: '\u0631\u0648\u0627\u0646\u06af\u06cc \u0627\u0648\u0631 \u0645\u0646\u0632\u0644 \u0627\u0633\u0679\u06cc\u0634\u0646\u060c \u0633\u0641\u0631 \u06a9\u06cc \u062a\u0627\u0631\u06cc\u062e\u060c \u06a9\u0644\u0627\u0633 \u0627\u0648\u0631 \u06a9\u0648\u0679\u06c1 \u0686\u0646\u06c1 \u067e\u06be\u0631 Search Trains \u06a9\u0631\u06cc\u06ba\u06d4', generic: '\u0645\u06cc\u06ba \u0628\u06a9\u0646\u06af\u060c \u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631\u060c \u0631\u0641\u0646\u0688 \u0627\u0648\u0631 \u0679\u0631\u06cc\u0646 \u06a9\u06cc \u062d\u0627\u0644\u062a \u0645\u06cc\u06ba \u0645\u062f\u062f \u06a9\u0631 \u0633\u06a9\u062a\u0627 \u06c1\u0648\u06ba\u06d4 \u0622\u067e \u06a9\u06cc\u0627 \u0686\u06cc\u06a9 \u06a9\u0631\u0646\u0627 \u0686\u0627\u06c1\u06cc\u06ba \u06af\u06d2\u061f' }
+  }
+};
 
-function appendMessage(text, role) {
+const VOICE_CHAT_COPY = {
+  en: { start: 'Start voice chat', end: 'End voice chat', active: 'Voice chat active — listening' },
+  hi: { start: '\u0935\u0949\u0907\u0938 \u091a\u0948\u091f \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902', end: '\u0935\u0949\u0907\u0938 \u091a\u0948\u091f \u092c\u0902\u0926 \u0915\u0930\u0947\u0902', active: '\u0935\u0949\u0907\u0938 \u091a\u0948\u091f \u091a\u093e\u0932\u0942 \u0939\u0948 — \u0938\u0941\u0928 \u0930\u0939\u093e \u0939\u0942\u0901' },
+  kok: { start: 'Voice chat suru karat', end: 'Voice chat band karat', active: 'Voice chat suru asa — aikta' },
+  ur: { start: '\u0648\u0627\u0626\u0633 \u0686\u06cc\u0679 \u0634\u0631\u0648\u0639 \u06a9\u0631\u06cc\u06ba', end: '\u0648\u0627\u0626\u0633 \u0686\u06cc\u0679 \u0628\u0646\u062f \u06a9\u0631\u06cc\u06ba', active: '\u0648\u0627\u0626\u0633 \u0686\u06cc\u0679 \u0686\u0627\u0644\u0648 \u06c1\u06d2 — \u0633\u0646 \u0631\u06c1\u0627 \u06c1\u0648\u06ba' }
+};
+
+let voiceRepliesEnabled = true;
+let botLanguage = localStorage.getItem('irctc-language') || 'en';
+function getBotLocale() { return BOT_LOCALES[localStorage.getItem('irctc-language') || botLanguage] || BOT_LOCALES.en; }
+function getVoiceChatCopy() { return VOICE_CHAT_COPY[localStorage.getItem('irctc-language') || botLanguage] || VOICE_CHAT_COPY.en; }
+
+function speakBotReply(text, onEnd, force = false) {
+  if ((!voiceRepliesEnabled && !force) || !('speechSynthesis' in window)) {
+    if (onEnd) onEnd();
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = getBotLocale().voice;
+  const voice = speechSynthesis.getVoices().find((item) => item.lang.toLowerCase().startsWith(utterance.lang.slice(0, 2).toLowerCase()));
+  if (voice) utterance.voice = voice;
+  if (onEnd) {
+    utterance.addEventListener('end', onEnd, { once: true });
+    utterance.addEventListener('error', onEnd, { once: true });
+  }
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utterance);
+}
+
+function appendMessage(text, role, speak = false) {
   const helpMessages = document.getElementById('help-messages');
   if (!helpMessages) return;
   const div = document.createElement('div');
   div.className = `chat-msg ${role}`;
-  div.innerHTML = role === 'bot'
-    ? `<span class="chat-avatar">AI</span><div class="chat-bubble">${text}</div>`
-    : `<div class="chat-bubble">${text}</div><span class="chat-avatar user">VM</span>`;
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+  bubble.textContent = text;
+  const avatar = document.createElement('span');
+  avatar.className = role === 'bot' ? 'chat-avatar' : 'chat-avatar user';
+  avatar.textContent = role === 'bot' ? 'AI' : 'VM';
+  div.append(role === 'bot' ? avatar : bubble, role === 'bot' ? bubble : avatar);
   helpMessages.appendChild(div);
   helpMessages.scrollTop = helpMessages.scrollHeight;
+  if (role === 'bot' && speak) speakBotReply(text);
 }
 
 function initHelpBot() {
   const helpForm = document.getElementById('help-form');
   const helpMessages = document.getElementById('help-messages');
   if (!helpForm || !helpMessages) return;
-  if (helpMessages.childElementCount) return;
-  appendMessage('Hi! I\'m the IRCTC help assistant (demo). Ask me about bookings, PNR, refunds, or train status.', 'bot');
-  helpForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('help-input');
-    const text = input.value.trim();
+  const input = document.getElementById('help-input');
+  const title = document.getElementById('help-title');
+  const demo = document.getElementById('help-demo');
+  const sendButton = document.getElementById('help-send');
+  const micButton = document.getElementById('help-mic');
+  const speakerButton = document.getElementById('help-speaker');
+  const callButton = document.getElementById('help-call');
+  const voiceChatStatus = document.getElementById('voice-chat-status');
+  const voiceChatLabel = document.getElementById('voice-chat-label');
+  const quickReplies = document.getElementById('help-quick-replies');
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let voiceChatActive = false;
+  let callRecognition = null;
+  let callRestartTimer = null;
+  let callAwaitingReply = false;
+
+  const replyFor = (text, topic) => {
+    if (topic) return getBotLocale().replies[topic];
+    const query = text.toLowerCase();
+    if (/pnr|\u092a\u0940\u090f\u0928\u0906\u0930|\u067e\u06cc \u0627\u06cc\u0646 \u0622\u0631/.test(query)) return getBotLocale().replies.pnr;
+    if (/refund|\u0930\u093f\u092b\u0902\u0921|\u0631\u0641\u0646\u0688/.test(query)) return getBotLocale().replies.refund;
+    if (/status|delay|train|\u0938\u094d\u0925\u093f\u0924\u093f|\u091f\u094d\u0930\u0947\u0928|\u062d\u0627\u0644\u062a|\u0679\u0631\u06cc\u0646/.test(query)) return getBotLocale().replies.status;
+    if (/book|ticket|station|\u092c\u0941\u0915|\u091f\u093f\u0915\u091f|\u0628\u06a9\u0646\u06af|\u0679\u06a9\u0679/.test(query)) return getBotLocale().replies.booking;
+    return getBotLocale().replies.generic;
+  };
+
+  const sendMessage = (text, topic, fromVoiceChat = false) => {
     if (!text) return;
     appendMessage(text, 'user');
     input.value = '';
-    setTimeout(() => {
-      appendMessage(botReplies[replyIndex % botReplies.length], 'bot');
-      replyIndex += 1;
-    }, 600);
+    window.setTimeout(() => {
+      const reply = replyFor(text, topic);
+      appendMessage(reply, 'bot');
+      if (fromVoiceChat) {
+        callAwaitingReply = false;
+        speakBotReply(reply, () => scheduleVoiceChatListening(), true);
+      } else {
+        speakBotReply(reply);
+      }
+    }, 350);
+  };
+
+  const scheduleVoiceChatListening = () => {
+    window.clearTimeout(callRestartTimer);
+    if (!voiceChatActive || callRecognition) return;
+    callRestartTimer = window.setTimeout(() => startVoiceChatListening(), 250);
+  };
+
+  const stopVoiceChat = () => {
+    voiceChatActive = false;
+    callAwaitingReply = false;
+    window.clearTimeout(callRestartTimer);
+    if (callRecognition) {
+      callRecognition.stop();
+      callRecognition = null;
+    }
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    voiceChatStatus.hidden = true;
+    callButton.classList.remove('is-in-call');
+    callButton.setAttribute('aria-pressed', 'false');
+    callButton.setAttribute('aria-label', getVoiceChatCopy().start);
+  };
+
+  const startVoiceChatListening = () => {
+    if (!voiceChatActive || !Recognition || callRecognition) return;
+    const recognition = new Recognition();
+    callRecognition = recognition;
+    recognition.lang = getBotLocale().voice;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.addEventListener('start', () => {
+      voiceChatLabel.textContent = getVoiceChatCopy().active;
+      callButton.classList.add('is-listening');
+    });
+    recognition.addEventListener('result', (event) => {
+      const transcript = event.results[0][0].transcript.trim();
+      if (!transcript) return;
+      callAwaitingReply = true;
+      sendMessage(transcript, undefined, true);
+    });
+    recognition.addEventListener('end', () => {
+      if (callRecognition === recognition) callRecognition = null;
+      callButton.classList.remove('is-listening');
+      if (voiceChatActive && !callAwaitingReply) scheduleVoiceChatListening();
+    });
+    recognition.addEventListener('error', (event) => {
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        stopVoiceChat();
+        appendMessage(getBotLocale().unsupported, 'bot');
+      }
+    });
+    recognition.start();
+  };
+
+  const startVoiceChat = () => {
+    if (!Recognition) return appendMessage(getBotLocale().unsupported, 'bot');
+    voiceRepliesEnabled = true;
+    voiceChatActive = true;
+    voiceChatStatus.hidden = false;
+    voiceChatLabel.textContent = getVoiceChatCopy().active;
+    callButton.classList.add('is-in-call');
+    callButton.setAttribute('aria-pressed', 'true');
+    callButton.setAttribute('aria-label', getVoiceChatCopy().end);
+    renderLocale();
+    startVoiceChatListening();
+  };
+
+  const renderLocale = () => {
+    const locale = getBotLocale();
+    title.textContent = locale.title;
+    demo.textContent = locale.demo;
+    input.placeholder = locale.placeholder;
+    sendButton.textContent = locale.send;
+    micButton.setAttribute('aria-label', locale.mic);
+    speakerButton.setAttribute('aria-label', voiceRepliesEnabled ? locale.speakerOff : locale.speakerOn);
+    speakerButton.setAttribute('aria-pressed', String(voiceRepliesEnabled));
+    callButton.setAttribute('aria-label', voiceChatActive ? getVoiceChatCopy().end : getVoiceChatCopy().start);
+    if (voiceChatActive) voiceChatLabel.textContent = getVoiceChatCopy().active;
+    quickReplies.replaceChildren();
+    locale.quick.forEach(([label, topic]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'quick-reply';
+      button.textContent = label;
+      button.addEventListener('click', () => sendMessage(label, topic));
+      quickReplies.appendChild(button);
+    });
+  };
+
+  helpForm.addEventListener('submit', (event) => { event.preventDefault(); sendMessage(input.value.trim()); });
+  micButton.addEventListener('click', () => {
+    if (!Recognition) return appendMessage(getBotLocale().unsupported, 'bot');
+    const recognition = new Recognition();
+    recognition.lang = getBotLocale().voice;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    micButton.classList.add('is-listening');
+    recognition.addEventListener('result', (event) => sendMessage(event.results[0][0].transcript.trim()));
+    recognition.addEventListener('end', () => { micButton.classList.remove('is-listening'); renderLocale(); });
+    recognition.addEventListener('error', () => { micButton.classList.remove('is-listening'); renderLocale(); });
+    recognition.start();
+  });
+  speakerButton.addEventListener('click', () => {
+    voiceRepliesEnabled = !voiceRepliesEnabled;
+    if (!voiceRepliesEnabled && 'speechSynthesis' in window) speechSynthesis.cancel();
+    renderLocale();
+    if (voiceRepliesEnabled) appendMessage(getBotLocale().voiceOn, 'bot', true);
+  });
+  callButton.addEventListener('click', () => {
+    if (voiceChatActive) stopVoiceChat();
+    else startVoiceChat();
+  });
+  renderLocale();
+  if (!helpMessages.childElementCount) appendMessage(getBotLocale().intro, 'bot');
+  window.addEventListener('irctc-language-change', (event) => {
+    const changed = event.detail !== botLanguage;
+    botLanguage = event.detail;
+    renderLocale();
+    if (changed) appendMessage(getBotLocale().changed, 'bot', voiceRepliesEnabled);
   });
 }
 initHelpBot();

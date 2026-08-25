@@ -175,14 +175,19 @@
       </button>
       <div class="rail-pet-panel glass-panel" id="rail-pet-panel" hidden>
         <div class="rail-pet-head">
-          <strong>IRCTC Assistant</strong>
-          <span class="demo-badge">Demo</span>
+          <strong id="help-title">IRCTC Assistant</strong>
+          <span class="demo-badge" id="help-demo">Demo</span>
+          <button type="button" class="help-icon-btn" id="help-speaker" aria-label="Turn voice replies on" aria-pressed="false">&#128266;</button>
+          <button type="button" class="help-icon-btn help-call-btn" id="help-call" aria-label="Start voice chat" aria-pressed="false">&#128222;</button>
           <button type="button" class="rail-pet-close" id="rail-pet-close" aria-label="Close">✕</button>
         </div>
+        <div class="voice-chat-status" id="voice-chat-status" hidden><span class="voice-chat-dot"></span><span id="voice-chat-label"></span></div>
         <div class="help-messages" id="help-messages"></div>
+        <div class="help-quick-replies" id="help-quick-replies" aria-label="Quick replies"></div>
         <form class="help-form" id="help-form">
           <input class="field-input" type="text" id="help-input" placeholder="Ask about PNR, refunds…" autocomplete="off" required>
-          <button type="submit" class="btn-primary">SEND</button>
+          <button type="button" class="help-icon-btn" id="help-mic" aria-label="Use voice input">&#127908;</button>
+          <button type="submit" class="btn-primary" id="help-send">SEND</button>
         </form>
       </div>
     `;
@@ -192,12 +197,21 @@
     if (saved) {
       try {
         const pos = JSON.parse(saved);
-        pet.style.left = pos.left;
-        pet.style.top = pos.top;
-        pet.style.right = 'auto';
-        pet.style.bottom = 'auto';
+        const left = Number.parseFloat(pos.left);
+        const top = Number.parseFloat(pos.top);
+        const visible = Number.isFinite(left) && Number.isFinite(top)
+          && left >= 8 && top >= 8
+          && left <= window.innerWidth - 64 && top <= window.innerHeight - 64;
+        if (visible) {
+          pet.style.left = `${left}px`;
+          pet.style.top = `${top}px`;
+          pet.style.right = 'auto';
+          pet.style.bottom = 'auto';
+        } else {
+          localStorage.removeItem('irctc-pet-pos');
+        }
       } catch (e) {
-        /* keep default */
+        localStorage.removeItem('irctc-pet-pos');
       }
     }
 
