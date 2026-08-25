@@ -93,12 +93,37 @@
 
   const authEl = document.getElementById('nav-auth');
 
+  let currentSession = null;
+
   function getSession() {
-    try {
-      return JSON.parse(localStorage.getItem('irctc-auth-session'));
-    } catch (error) {
-      return null;
+    return currentSession;
+  }
+
+  async function requestAuth(path, options = {}) {
+    const { headers = {}, ...requestOptions } = options;
+    const response = await fetch(path, {
+      credentials: 'same-origin',
+      headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...headers },
+      ...requestOptions,
+    });
+    if (response.status === 204) return null;
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(body.error || 'Unable to complete this request.');
+      error.status = response.status;
+      throw error;
     }
+    return body;
+  }
+
+  async function refreshSession() {
+    try {
+      const body = await requestAuth('/v1/auth/session');
+      currentSession = body.account;
+    } catch (error) {
+      currentSession = null;
+    }
+    renderAuth();
   }
 
   function initials(value) {
@@ -167,9 +192,15 @@
     modal.addEventListener('click', (event) => {
       if (event.target === modal) closeAuthModal();
     });
-    modal.querySelector('.account-signout').addEventListener('click', () => {
-      localStorage.removeItem('irctc-auth-session');
-      localStorage.removeItem('irctc-logged-in');
+    modal.querySelector('.account-signout').addEventListener('click', async () => {
+      const signout = modal.querySelector('.account-signout');
+      signout.disabled = true;
+      try {
+        await requestAuth('/v1/auth/logout', { method: 'POST' });
+      } catch (error) {
+        // A missing/expired server session is still safe to clear from this UI.
+      }
+      currentSession = null;
       closeAuthModal();
       renderAuth();
     });
@@ -285,18 +316,32 @@
       }
       submit.disabled = true;
       submit.textContent = 'VERIFYING…';
-      window.setTimeout(() => {
-        const name = identity.value.trim();
-        localStorage.setItem('irctc-auth-session', JSON.stringify({ name, role }));
-        localStorage.setItem('irctc-logged-in', 'true');
+      requestAuth('/v1/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          identity: identity.value.trim(),
+          password: password.value,
+          role,
+          agentDeclarationAccepted: role === 'agent' && agreement.checked,
+        }),
+      }).then((body) => {
+        currentSession = body.account;
         closeAuthModal();
         renderAuth();
-      }, 500);
+      }).catch((requestError) => {
+        error.textContent = requestError.status === 429
+          ? 'Too many login attempts. Please try again later.'
+          : 'Invalid credentials or account access.';
+        error.hidden = false;
+        submit.disabled = false;
+        submit.textContent = 'SIGN IN SECURELY';
+      });
     });
     identity.focus();
   }
 
   renderAuth();
+  refreshSession();
 
   const languageSelect = document.getElementById('language-select');
   const savedLanguage = localStorage.getItem('irctc-language') || 'en';

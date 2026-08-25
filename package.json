@@ -1,0 +1,25 @@
+{
+  "name": "irctc-revamped",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IRCTC ReVamped static frontend with Phase 1 authentication services.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "db:migrate": "node server/scripts/migrate.js",
+    "db:seed": "node server/scripts/seed-development.js",
+    "test": "node --test test/**/*.test.js",
+    "check": "node --check server/index.js && node --check api/index.js && node --check js/nav.js && node --check js/main.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "argon2": "^0.41.1",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "redis": "^4.7.1"
+  }
+}
