@@ -63,7 +63,7 @@
       </div>
     </div>
     <div class="nav-bottom glass-panel">
-      <a href="index.html" class="logo-mark" aria-label="IRCTC Home">IR</a>
+      <a href="index.html" class="logo-mark" aria-label="IRCTC Home" style="background: transparent;"><img src="icons-package/assets/main%20logo.png" alt="IRCTC" width="32" height="32" style="width: 32px; height: 32px; object-fit: contain; display: block;"></a>
       <div class="nav-auth" id="nav-auth">
         <button type="button" class="login-btn" id="auth-toggle">LOGIN / REGISTER</button>
       </div>
