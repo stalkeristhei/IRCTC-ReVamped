@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your verified IRCTC passenger profile, identity details, and travel preferences.">
+  <title>IRCTC — Profile</title>
+  <link rel="stylesheet" href="css/styles.min.css">
+</head>
+<body data-page="profile">
+  <header id="site-header"></header>
+
+  <main class="page-wrapper profile-page">
+    <section class="profile-hero glass-panel" aria-labelledby="profile-title">
+      <div class="profile-identity">
+        <div class="profile-hero-avatar" id="profile-avatar" aria-hidden="true">IR</div>
+        <div>
+          <span class="profile-kicker" data-profile-i18n="profile">PROFILE</span>
+          <h1 id="profile-title">Your IRCTC profile</h1>
+          <p class="profile-status" id="profile-status">Complete your mandatory details to verify your profile.</p>
+          <p class="member-since"><span id="member-since-label" data-profile-i18n="memberSince">Member since</span> <span id="member-since">—</span></p>
+          <div class="profile-photo-controls">
+            <label class="btn-secondary photo-upload" for="profile-photo"><span data-profile-i18n="addPhoto">ADD PROFILE PHOTO</span><input id="profile-photo" type="file" accept="image/png,image/jpeg,image/webp" hidden></label>
+            <button class="photo-remove" id="remove-profile-photo" type="button" hidden data-profile-i18n="removePhoto">REMOVE PHOTO</button>
+          </div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-primary" type="button" data-scroll-target="personal-information" data-profile-i18n="editProfile">EDIT PROFILE</button>
+        <button class="btn-secondary" type="button" data-scroll-target="security-section" data-profile-i18n="security">SECURITY</button>
+      </div>
+    </section>
+
+    <section class="profile-section glass-panel" id="personal-information" aria-labelledby="personal-title">
+      <div class="profile-section-heading">
+        <div><span class="profile-kicker" data-profile-i18n="requiredToBook">REQUIRED TO BOOK</span><h2 id="personal-title" data-profile-i18n="personalInformation">Personal information</h2></div>
+        <span class="required-note"><span aria-hidden="true">*</span> <span data-profile-i18n="requiredFields">Required fields</span></span>
+      </div>
+      <p class="profile-intro" data-profile-i18n="profileIntro">Start with an identity option below to prefill your details, then review and edit anything you need.</p>
+
+      <form id="profile-form" novalidate>
+        <div class="profile-form-grid">
+          <div class="field-group"><label for="full-name"><span data-profile-i18n="fullName">Full name</span> <span aria-hidden="true">*</span></label><input class="field-input" id="full-name" name="fullName" autocomplete="name" required maxlength="80" placeholder="Enter your full name"></div>
+          <div class="field-group"><label for="date-of-birth"><span data-profile-i18n="dateOfBirth">Date of birth</span> <span aria-hidden="true">*</span></label><input class="field-input" id="date-of-birth" name="dateOfBirth" type="date" autocomplete="bday" required></div>
+          <div class="field-group"><label for="gender"><span data-profile-i18n="gender">Gender</span> <span aria-hidden="true">*</span></label><select class="field-input" id="gender" name="gender" required><option value="" selected disabled data-profile-i18n="selectGender">Select gender</option><option data-profile-i18n="female">Female</option><option data-profile-i18n="male">Male</option><option data-profile-i18n="nonBinary">Non-binary</option><option data-profile-i18n="preferNot">Prefer not to say</option></select></div>
+          <div class="field-group"><label for="profile-email"><span data-profile-i18n="verifiedEmail">Verified email</span> <span aria-hidden="true">*</span></label><input class="field-input" id="profile-email" name="email" type="email" autocomplete="email" required readonly placeholder="name@example.com"></div>
+          <div class="field-group"><label for="mobile-number"><span data-profile-i18n="mobileNumber">Mobile number</span> <span aria-hidden="true">*</span></label><input class="field-input" id="mobile-number" name="mobile" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9+() -]{7,20}" placeholder="Enter your mobile number"></div>
+          <div class="field-group"><label for="nationality"><span data-profile-i18n="nationality">Nationality / residence</span> <span aria-hidden="true">*</span></label><select class="field-input" id="nationality" name="nationality" required><option value="" selected disabled data-profile-i18n="selectOption">Select an option</option><option value="india" data-profile-i18n="indianCitizen">Indian citizen</option><option value="foreign" data-profile-i18n="foreignNational">Foreign national</option></select></div>
+          <div class="field-group profile-field-wide"><label for="address"><span data-profile-i18n="address">Address</span> <span aria-hidden="true">*</span></label><textarea class="field-input" id="address" name="address" autocomplete="street-address" required minlength="10" maxlength="250" rows="3" placeholder="House / street, city, state, postal code"></textarea></div>
+        </div>
+
+        <section class="identity-verification" id="verification-section" aria-labelledby="verification-title">
+          <div class="profile-section-heading">
+            <div><span class="profile-kicker" data-profile-i18n="firstStep">FIRST STEP</span><h3 id="verification-title" data-profile-i18n="identityVerification">Identity verification</h3></div>
+            <span class="verification-badge pending" id="verification-badge">NOT VERIFIED</span>
+          </div>
+          <p id="verification-copy">Choose a verification option first. It can prefill your personal details, which remain editable.</p>
+          <div class="demo-document-picker" aria-label="Demo identity documents">
+            <p class="demo-document-title" data-profile-i18n="tryDemoDocument">Try a demo identity document</p>
+            <div class="demo-document-grid">
+              <button class="demo-document-card" type="button" data-demo-document="aadhaar"><strong data-profile-i18n="demoAadhaar">Demo Aadhaar card</strong><span data-profile-i18n="indianCitizen">Indian citizen</span></button>
+              <button class="demo-document-card" type="button" data-demo-document="pan"><strong data-profile-i18n="demoPan">Demo PAN card</strong><span data-profile-i18n="indianCitizen">Indian citizen</span></button>
+              <button class="demo-document-card" type="button" data-demo-document="passport"><strong data-profile-i18n="demoPassport">Demo passport</strong><span data-profile-i18n="foreignNational">Foreign national</span></button>
+            </div>
+            <p class="demo-document-note" data-profile-i18n="demoDocumentNote">Training samples only — these are fictional records and not valid identity documents.</p>
+          </div>
+          <div class="profile-form-grid identity-fields" id="identity-fields" hidden>
+            <div class="field-group"><label for="identity-document" id="document-label">Identity document <span aria-hidden="true">*</span></label><select class="field-input" id="identity-document" name="documentType" required disabled></select></div>
+            <div class="field-group"><label for="identity-number" id="identity-number-label">Document number <span aria-hidden="true">*</span></label><input class="field-input" id="identity-number" name="documentNumber" autocomplete="off" required disabled placeholder="Select a document first"></div>
+          </div>
+          <div class="verification-controls" id="verification-controls" hidden>
+            <button class="btn-secondary" type="button" id="verify-document" data-profile-i18n="verifyDocument">VERIFY DOCUMENT</button>
+            <p class="verification-help" id="verification-help" aria-live="polite">A one-time passcode confirmation is required to finish verification.</p>
+          </div>
+          <p class="verification-disclaimer" data-profile-i18n="verificationDisclaimer">Demo verification only: a production service must verify documents securely with the appropriate issuing authority. Do not use this prototype to submit real identity information.</p>
+        </section>
+
+        <p class="profile-form-message" id="profile-form-message" role="alert" aria-live="polite" hidden></p>
+        <div class="profile-save-row"><button class="btn-primary" type="submit" data-profile-i18n="saveDetails">SAVE REQUIRED DETAILS</button></div>
+      </form>
+    </section>
+
+    <div class="profile-summary-grid" aria-label="Profile services">
+      <section class="profile-section glass-panel"><h2 data-profile-i18n="travelInformation">Travel information</h2><ul class="profile-list"><li data-profile-i18n="savedPassengers">Saved passengers</li><li data-profile-i18n="preferences">Preferred class and berth</li><li data-profile-i18n="favourites">Favourite routes and stations</li></ul></section>
+      <section class="profile-section glass-panel"><h2 data-profile-i18n="myJourneys">My journeys</h2><ul class="profile-list"><li data-profile-i18n="upcomingTrips">Upcoming trips</li><li data-profile-i18n="previousTrips">Previous trips</li><li data-profile-i18n="cancelledTrips">Cancelled and saved trips</li></ul></section>
+      <section class="profile-section glass-panel"><h2 data-profile-i18n="paymentsRefunds">Payments &amp; refunds</h2><ul class="profile-list"><li data-profile-i18n="savedPayments">Saved payment methods</li><li data-profile-i18n="transactions">Transaction history</li><li data-profile-i18n="refundStatus">Refund status</li></ul></section>
+      <section class="profile-section glass-panel" id="security-section"><h2 data-profile-i18n="security">Security</h2><ul class="profile-list"><li data-profile-i18n="changePassword">Change password</li><li data-profile-i18n="twoFactor">Two-factor authentication / OTP</li><li data-profile-i18n="sessions">Active sessions and login history</li><li data-profile-i18n="devices">Trusted devices</li></ul></section>
+    </div>
+  </main>
+
+  <script src="js/nav.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

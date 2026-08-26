@@ -92,6 +92,15 @@
   }, 6000);
 
   const authEl = document.getElementById('nav-auth');
+  const accountsKey = 'irctc-demo-accounts-v1';
+  const sessionResetKey = 'irctc-session-reset-v2';
+
+  // Start a newly deployed demo in a signed-out state, while preserving later sign-ins.
+  if (localStorage.getItem(sessionResetKey) !== 'done') {
+    localStorage.removeItem('irctc-auth-session');
+    localStorage.removeItem('irctc-logged-in');
+    localStorage.setItem(sessionResetKey, 'done');
+  }
 
   function getSession() {
     try {
@@ -99,6 +108,92 @@
     } catch (error) {
       return null;
     }
+  }
+
+  function getAccounts() {
+    let accounts;
+    try { accounts = JSON.parse(localStorage.getItem(accountsKey)) || []; } catch (error) { accounts = []; }
+    const demoAccounts = [
+      {
+        email: 'demo@irctc.test',
+        salt: 'irctc-demo-seed-2026',
+        passwordHash: 'abc9bddf31fe24eddecbb6f34cc021bb6d27dcdab5ddde91c512d48db483923f',
+        emailVerified: true,
+        memberSince: new Date().toISOString(),
+      },
+      {
+        email: 'public@irctc.test',
+        salt: 'irctc-public-seed-2026',
+        passwordHash: 'a80a8fd87d9cc4a387690bf5ff07d3fe0f78f66d2cffe25e276723f3ff8c2bd7',
+        emailVerified: true,
+        memberSince: new Date().toISOString(),
+        accountLabel: 'Public demo',
+      },
+      {
+        email: 'judges@irctc.test',
+        salt: 'irctc-judges-seed-2026',
+        passwordHash: 'da8a48f73232b2ca382f54da6452388497a4fd299d7f8db990597e3823383892',
+        emailVerified: true,
+        memberSince: new Date().toISOString(),
+        accountLabel: 'Judges demo',
+      },
+    ];
+    let changed = false;
+    demoAccounts.forEach((demo) => {
+      const existing = accounts.find((account) => account.email === demo.email);
+      if (!existing) {
+        accounts.push(demo);
+        changed = true;
+      } else if (existing.memberSince === '2026-01-01T00:00:00.000Z') {
+        existing.memberSince = new Date().toISOString();
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveAccounts(accounts);
+    }
+    return accounts;
+  }
+
+  function saveAccounts(accounts) {
+    localStorage.setItem(accountsKey, JSON.stringify(accounts));
+  }
+
+  function getProfile() {
+    const session = getSession();
+    const accountEmail = session?.email || session?.name;
+    if (!accountEmail) return {};
+    try { return JSON.parse(localStorage.getItem(`irctc-user-profile:${accountEmail.toLowerCase()}`)) || {}; } catch (error) { return {}; }
+  }
+
+  function normalizeEmail(value) {
+    return value.trim().toLowerCase();
+  }
+
+  function resetShowcaseProfile(email) {
+    if (!['public@irctc.test', 'judges@irctc.test'].includes(email)) return;
+    localStorage.removeItem(`irctc-user-profile:${email}`);
+  }
+
+  async function passwordHash(value, salt) {
+    const bytes = new TextEncoder().encode(`${salt || 'irctc-demo-v1'}:${value}`);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  function createSalt() {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    return Array.from(bytes).map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  function safeAvatar(value) {
+    return typeof value === 'string' && value.startsWith('data:image/') ? value : '';
+  }
+
+  function hasBookableProfile() {
+    const session = getSession();
+    const profile = getProfile();
+    return Boolean(session && session.role === 'user' && session.emailVerified && profile.completed && profile.documentVerified);
   }
 
   function initials(value) {
@@ -120,9 +215,10 @@
   function renderAuth() {
     const session = getSession();
     if (session) {
+      const avatar = session.role === 'user' ? safeAvatar(getProfile().avatar) : '';
       authEl.innerHTML = `
         <button type="button" class="profile-btn" id="auth-toggle" aria-label="Account menu">
-          <span class="profile-avatar">${initials(session.name)}</span>
+          <span class="profile-avatar${avatar ? ' has-photo' : ''}"${avatar ? ` style="background-image:url('${avatar}')"` : ''}>${avatar ? '' : initials(session.name)}</span>
           <span class="profile-name">${session.role === 'agent' ? 'AGENT · ' : ''}${escapeHtml(session.name)}</span>
         </button>
       `;
@@ -135,7 +231,7 @@
     }
     document.getElementById('auth-toggle').addEventListener('click', () => {
       if (getSession()) openAccountMenu();
-      else openAuthModal();
+      else openUserAuthModal();
     });
   }
 
@@ -147,7 +243,7 @@
 
   function openAccountMenu() {
     const session = getSession();
-    if (!session) return openAuthModal();
+    if (!session) return openUserAuthModal();
     closeAuthModal();
     const modal = document.createElement('div');
     modal.className = 'auth-modal-backdrop';
@@ -158,7 +254,8 @@
         <span class="auth-kicker">SIGNED IN</span>
         <h2 id="account-title">${escapeHtml(session.name)}</h2>
         <p class="account-role">${session.role === 'agent' ? 'Authorized Agent account' : 'Passenger account'}</p>
-        <p class="auth-note">Your live session, permissions and account status are checked by the authentication service.</p>
+        <p class="auth-note">${session.role === 'user' && !hasBookableProfile() ? 'Complete your verified profile before making a booking.' : 'Your account is ready for booking.'}</p>
+        ${session.role === 'user' ? '<a class="btn-primary account-profile-link" href="profile.html">VIEW PROFILE</a>' : ''}
         <button class="btn-secondary account-signout" type="button">SIGN OUT</button>
       </section>`;
     document.body.appendChild(modal);
@@ -291,12 +388,188 @@
         localStorage.setItem('irctc-logged-in', 'true');
         closeAuthModal();
         renderAuth();
+        if (role === 'user') window.location.href = 'profile.html';
       }, 500);
     });
     identity.focus();
   }
 
+  function openUserAuthModal() {
+    closeAuthModal();
+    const modal = document.createElement('div');
+    modal.className = 'auth-modal-backdrop';
+    modal.id = 'auth-modal';
+    modal.innerHTML = `
+      <section class="auth-modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="user-auth-title">
+        <button class="auth-close" type="button" aria-label="Close login">×</button>
+        <span class="auth-kicker">SECURE ACCESS</span>
+        <h2 id="user-auth-title">Sign in to IRCTC</h2>
+        <p class="auth-subtitle">Create and verify a passenger account before booking.</p>
+        <div class="auth-role-switch" role="tablist" aria-label="Account action">
+          <button type="button" role="tab" aria-selected="true" class="auth-role active" data-user-mode="signin">Sign in</button>
+          <button type="button" role="tab" aria-selected="false" class="auth-role" data-user-mode="register">Create account</button>
+        </div>
+        <form id="user-auth-form" novalidate>
+          <div class="field-group"><label for="user-auth-email">Email address</label><input class="field-input" id="user-auth-email" type="email" autocomplete="username" required maxlength="80" placeholder="name@example.com"></div>
+          <div class="field-group auth-password-group"><label for="user-auth-password">Password</label><div class="password-control"><input class="field-input" id="user-auth-password" type="password" autocomplete="current-password" required minlength="8" placeholder="Minimum 8 characters"><button type="button" class="password-toggle" aria-label="Show password" aria-pressed="false">Show</button></div></div>
+          <div class="field-group auth-password-group" id="user-confirm-group" hidden><label for="user-auth-confirm">Confirm password</label><div class="password-control"><input class="field-input" id="user-auth-confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Re-enter your password"></div></div>
+          <div class="field-group" id="user-code-group" hidden><label for="user-auth-code">Email verification code</label><input class="field-input" id="user-auth-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="Enter the 6-digit code"><p class="auth-risk-note">Demo email code: <strong>123456</strong>. A live site would email this code to you.</p></div>
+          <p class="auth-risk-note" id="user-auth-note">Your password is stored only as a non-reversible hash in this browser demo.</p>
+          <div class="auth-demo-logins" aria-label="Demo login accounts">
+            <strong>Demo accounts</strong>
+            <span><b>Public:</b> public@irctc.test / PublicDemo2026!</span>
+            <span><b>Judges:</b> judges@irctc.test / JudgeDemo2026!</span>
+          </div>
+          <p class="auth-error" id="user-auth-error" role="alert" hidden></p>
+          <button type="submit" class="btn-primary auth-submit" id="user-auth-submit">SIGN IN SECURELY</button>
+          <div class="auth-links"><button type="button" id="user-auth-recovery">Forgot account details?</button></div>
+        </form>
+        <p class="auth-prototype-note">Demo interface only — real accounts require a server, secure sessions, and an email delivery service.</p>
+      </section>`;
+    document.body.appendChild(modal);
+    document.body.classList.add('auth-modal-open');
+
+    let mode = 'signin';
+    let pendingAccount;
+    const form = modal.querySelector('#user-auth-form');
+    const email = modal.querySelector('#user-auth-email');
+    const password = modal.querySelector('#user-auth-password');
+    const confirm = modal.querySelector('#user-auth-confirm');
+    const confirmGroup = modal.querySelector('#user-confirm-group');
+    const code = modal.querySelector('#user-auth-code');
+    const codeGroup = modal.querySelector('#user-code-group');
+    const error = modal.querySelector('#user-auth-error');
+    const note = modal.querySelector('#user-auth-note');
+    const submit = modal.querySelector('#user-auth-submit');
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      pendingAccount = undefined;
+      const registering = mode === 'register';
+      modal.querySelectorAll('[data-user-mode]').forEach((button) => {
+        const selected = button.dataset.userMode === mode;
+        button.classList.toggle('active', selected);
+        button.setAttribute('aria-selected', selected);
+      });
+      confirmGroup.hidden = !registering;
+      confirm.required = registering;
+      codeGroup.hidden = true;
+      code.required = false;
+      password.autocomplete = registering ? 'new-password' : 'current-password';
+      submit.textContent = registering ? 'CREATE ACCOUNT' : 'SIGN IN SECURELY';
+      note.textContent = registering
+        ? 'Your password is stored only as a non-reversible hash in this browser demo.'
+        : 'Use the email address and password from your verified account.';
+      error.hidden = true;
+    }
+
+    modal.querySelectorAll('[data-user-mode]').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.userMode)));
+    modal.querySelector('.auth-close').addEventListener('click', closeAuthModal);
+    modal.addEventListener('click', (event) => { if (event.target === modal) closeAuthModal(); });
+    modal.querySelector('.password-toggle').addEventListener('click', (event) => {
+      const revealed = password.type === 'text';
+      password.type = revealed ? 'password' : 'text';
+      event.currentTarget.textContent = revealed ? 'Show' : 'Hide';
+      event.currentTarget.setAttribute('aria-pressed', String(!revealed));
+    });
+    modal.querySelector('#user-auth-recovery').addEventListener('click', () => {
+      error.textContent = 'Account recovery needs a verified email service, which is not available in this local demo.';
+      error.hidden = false;
+      error.classList.add('is-info');
+    });
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.hidden = true;
+      error.classList.remove('is-info');
+      if (!form.checkValidity()) {
+        error.textContent = 'Enter a valid email address and password to continue.';
+        error.hidden = false;
+        form.reportValidity();
+        return;
+      }
+      submit.disabled = true;
+      try {
+        const accountEmail = normalizeEmail(email.value);
+        const accounts = getAccounts();
+        if (mode === 'register' && !pendingAccount) {
+          if (password.value !== confirm.value) throw new Error('Passwords do not match.');
+          const existingAccount = accounts.find((account) => account.email === accountEmail);
+          if (existingAccount) {
+            if (existingAccount.emailVerified) throw new Error('An account already exists for this email. Sign in instead.');
+            if (existingAccount.passwordHash !== await passwordHash(password.value, existingAccount.salt)) throw new Error('The password does not match this pending account.');
+            pendingAccount = existingAccount;
+            codeGroup.hidden = false;
+            code.required = true;
+            submit.textContent = 'VERIFY EMAIL';
+            note.textContent = 'Enter the demo code above to verify your email and continue to your profile.';
+            code.focus();
+            return;
+          }
+          const salt = createSalt();
+          const account = { email: accountEmail, salt, passwordHash: await passwordHash(password.value, salt), emailVerified: false, memberSince: new Date().toISOString() };
+          accounts.push(account);
+          saveAccounts(accounts);
+          pendingAccount = account;
+          codeGroup.hidden = false;
+          code.required = true;
+          submit.textContent = 'VERIFY EMAIL';
+          note.textContent = 'Enter the demo code above to verify your email and continue to your profile.';
+          code.focus();
+          return;
+        }
+        if (mode === 'register' && pendingAccount) {
+          if (code.value !== '123456') throw new Error('Enter the six-digit demo code to verify this email.');
+          const account = accounts.find((item) => item.email === pendingAccount.email);
+          account.emailVerified = true;
+          saveAccounts(accounts);
+          localStorage.setItem('irctc-auth-session', JSON.stringify({ name: account.email, email: account.email, role: 'user', emailVerified: true, memberSince: account.memberSince }));
+          localStorage.setItem('irctc-logged-in', 'true');
+          window.location.href = 'profile.html';
+          return;
+        }
+        const account = accounts.find((item) => item.email === accountEmail);
+        if (!account || account.passwordHash !== await passwordHash(password.value, account.salt)) throw new Error('Email or password is incorrect.');
+        if (!account.emailVerified) throw new Error('This email has not been verified. Create the account again to complete demo verification.');
+        resetShowcaseProfile(account.email);
+        localStorage.setItem('irctc-auth-session', JSON.stringify({ name: account.email, email: account.email, role: 'user', emailVerified: true, memberSince: account.memberSince }));
+        localStorage.setItem('irctc-logged-in', 'true');
+        window.location.href = 'profile.html';
+      } catch (authError) {
+        error.textContent = authError.message || 'We could not complete the request. Please try again.';
+        error.hidden = false;
+      } finally {
+        submit.disabled = false;
+        if (mode === 'signin') submit.textContent = 'SIGN IN SECURELY';
+      }
+    });
+    email.focus();
+  }
+
   renderAuth();
+
+  const bookingPages = new Set(['passenger-details.html', 'review-pay.html', 'my-journey.html']);
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+  function sendToProfileForBooking(destination) {
+    localStorage.setItem('irctc-booking-intent', destination || 'passenger-details.html');
+    const session = getSession();
+    if (session && session.role === 'user') window.location.href = 'profile.html';
+    else openUserAuthModal();
+  }
+
+  if (bookingPages.has(currentPage) && !hasBookableProfile()) {
+    localStorage.setItem('irctc-booking-intent', currentPage);
+    const session = getSession();
+    if (session && session.role === 'user') window.location.replace('profile.html');
+    else window.location.replace('index.html');
+  }
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
+    if (!link || !bookingPages.has(link.getAttribute('href')) || hasBookableProfile()) return;
+    event.preventDefault();
+    sendToProfileForBooking(link.getAttribute('href'));
+  });
 
   const languageSelect = document.getElementById('language-select');
   const savedLanguage = localStorage.getItem('irctc-language') || 'en';
@@ -349,7 +622,7 @@
     pet.innerHTML = `
       <button type="button" class="rail-pet-face" id="rail-pet-toggle" aria-label="Open help assistant">
         <span class="rail-pet-dot"></span>
-        <span class="rail-pet-label">AI</span>
+        <span class="rail-pet-label">RailGuide</span>
       </button>
       <div class="rail-pet-panel glass-panel" id="rail-pet-panel" hidden>
         <div class="rail-pet-head">
