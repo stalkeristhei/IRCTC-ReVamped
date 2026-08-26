@@ -633,7 +633,7 @@
     pet.innerHTML = `
       <button type="button" class="rail-pet-face" id="rail-pet-toggle" aria-label="Open help assistant">
         <span class="rail-pet-dot"></span>
-        <span class="rail-pet-label">RailGuide</span>
+        <span class="rail-pet-label">AI</span>
       </button>
       <div class="rail-pet-panel glass-panel" id="rail-pet-panel" hidden>
         <div class="rail-pet-head">
@@ -662,7 +662,7 @@
         const top = Number.parseFloat(pos.top);
         const visible = Number.isFinite(left) && Number.isFinite(top)
           && left >= 8 && top >= 8
-          && left <= window.innerWidth - 64 && top <= window.innerHeight - 64;
+          && left <= window.innerWidth - 68 && top <= window.innerHeight - 68;
         if (visible) {
           pet.style.left = `${left}px`;
           pet.style.top = `${top}px`;
@@ -740,8 +740,8 @@
         return;
       }
       if (Math.abs(dx) + Math.abs(dy) > 4) face.dataset.dragged = '1';
-      const left = Math.min(window.innerWidth - 64, Math.max(8, origX + dx));
-      const top = Math.min(window.innerHeight - 64, Math.max(8, origY + dy));
+      const left = Math.min(Math.max(8, window.innerWidth - 68), Math.max(8, origX + dx));
+      const top = Math.min(Math.max(8, window.innerHeight - 68), Math.max(8, origY + dy));
       pet.style.left = `${left}px`;
       pet.style.top = `${top}px`;
       pet.style.right = 'auto';
@@ -761,6 +761,14 @@
     face.addEventListener('pointercancel', () => {
       clearLongPress();
       dragging = false;
+    });
+    window.addEventListener('resize', () => {
+      if (!pet.style.left || !pet.style.top) return;
+      const rect = pet.getBoundingClientRect();
+      const left = Math.min(Math.max(8, window.innerWidth - 68), Math.max(8, rect.left));
+      const top = Math.min(Math.max(8, window.innerHeight - 68), Math.max(8, rect.top));
+      pet.style.left = `${left}px`;
+      pet.style.top = `${top}px`;
     });
   }
 })();

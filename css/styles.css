@@ -2148,32 +2148,32 @@ body::after {
 
 .rail-pet {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  right: 24px;
+  bottom: 24px;
   z-index: 2000;
-  width: 132px;
+  width: 60px;
 }
 .rail-pet-face {
-  width: 132px;
-  height: 48px;
-  border-radius: 8px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.75);
   background: linear-gradient(145deg, #315d91, var(--rail-navy));
   color: #fff;
   box-shadow: var(--skeu-raised), 0 8px 20px rgba(30,58,95,0.28);
   cursor: grab;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 2px;
   animation: railguide-attention 5s ease-in-out infinite;
 }
 .rail-pet-face:active { cursor: grabbing; }
 .rail-pet-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); }
 .rail-pet.is-open .rail-pet-dot { background: #7dcea0; box-shadow: 0 0 8px #7dcea0; }
 .rail-pet:not(.is-open) .rail-pet-face { animation: railguide-attention 5s ease-in-out infinite; }
-.rail-pet-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; }
+.rail-pet-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; }
 @keyframes railguide-attention {
   0%, 88%, 100% { transform: scale(1); box-shadow: var(--skeu-raised), 0 8px 20px rgba(30,58,95,0.28); }
   92%, 96% { transform: scale(1.06); box-shadow: 0 0 0 7px rgba(196,92,38,0.2), 0 8px 24px rgba(30,58,95,0.38); }
@@ -2181,7 +2181,7 @@ body::after {
 .rail-pet-panel {
   position: absolute;
   right: 0;
-  bottom: 60px;
+  bottom: 72px;
   width: min(340px, calc(100vw - 24px));
   overflow: hidden;
 }
@@ -2249,7 +2249,7 @@ body::after {
   .lookup-form .btn-primary { margin-top: 14px; width: 100%; }
   .section-heading { flex-direction: column; }
   .last-updated { white-space: normal; }
-  .rail-pet { right: 10px; bottom: 10px; }
+  .rail-pet { right: 24px; bottom: 24px; }
   .rail-pet-panel { right: -2px; width: min(340px, calc(100vw - 20px)); }
   .train-card {
     grid-template-columns: 1fr;
