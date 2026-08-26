@@ -542,6 +542,22 @@
 
   renderAuth();
 
+  if (!document.getElementById('site-footer')) {
+    const footer = document.createElement('footer');
+    footer.id = 'site-footer';
+    footer.className = 'site-footer';
+    footer.innerHTML = `
+      <div class="site-footer-inner">
+        <span>Plan and manage your Indian Railways journey with IRCTC.</span>
+        <nav aria-label="Footer navigation">
+          <a href="sitemap.html">Browse the complete IRCTC site map</a>
+          <a href="help.html">Get booking and account help</a>
+          <a href="contact.html">Contact IRCTC support</a>
+        </nav>
+      </div>`;
+    document.body.appendChild(footer);
+  }
+
   const bookingPages = new Set(['passenger-details.html', 'review-pay.html', 'my-journey.html']);
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
