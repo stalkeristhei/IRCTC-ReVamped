@@ -632,11 +632,11 @@
     pet.className = 'rail-pet';
     pet.innerHTML = `
       <button type="button" class="rail-pet-face" id="rail-pet-toggle" aria-label="Open help assistant">
-        <span class="rail-pet-dot"></span>
-        <span class="rail-pet-label">AI</span>
+        <img class="rail-pet-icon" src="icons-package/assets/ai-bot.png" alt="AI assistant" width="42" height="42" style="object-fit: contain; pointer-events: none;">
       </button>
       <div class="rail-pet-panel glass-panel" id="rail-pet-panel" hidden>
         <div class="rail-pet-head">
+          <img class="rail-pet-panel-icon" src="icons-package/assets/ai-bot.png" alt="" width="28" height="28" style="object-fit: contain; flex-shrink: 0;">
           <strong id="help-title">IRCTC Assistant</strong>
           <span class="demo-badge" id="help-demo">Demo</span>
           <button type="button" class="help-icon-btn" id="help-speaker" aria-label="Turn voice replies on" aria-pressed="false">&#128266;</button>

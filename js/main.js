@@ -401,7 +401,17 @@ function appendMessage(text, role, speak = false) {
   bubble.textContent = text;
   const avatar = document.createElement('span');
   avatar.className = role === 'bot' ? 'chat-avatar' : 'chat-avatar user';
-  avatar.textContent = role === 'bot' ? 'AI' : 'VM';
+  if (role === 'bot') {
+    const avatarImage = document.createElement('img');
+    avatarImage.src = 'icons-package/assets/ai-bot.png';
+    avatarImage.alt = 'IRCTC Assistant';
+    avatarImage.width = 22;
+    avatarImage.height = 22;
+    avatarImage.style.objectFit = 'contain';
+    avatar.appendChild(avatarImage);
+  } else {
+    avatar.textContent = 'VM';
+  }
   div.append(role === 'bot' ? avatar : bubble, role === 'bot' ? bubble : avatar);
   helpMessages.appendChild(div);
   helpMessages.scrollTop = helpMessages.scrollHeight;
