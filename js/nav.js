@@ -415,11 +415,6 @@
           <div class="field-group auth-password-group" id="user-confirm-group" hidden><label for="user-auth-confirm">Confirm password</label><div class="password-control"><input class="field-input" id="user-auth-confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Re-enter your password"></div></div>
           <div class="field-group" id="user-code-group" hidden><label for="user-auth-code">Email verification code</label><input class="field-input" id="user-auth-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="Enter the 6-digit code"><p class="auth-risk-note">Demo email code: <strong>123456</strong>. A live site would email this code to you.</p></div>
           <p class="auth-risk-note" id="user-auth-note">Your password is stored only as a non-reversible hash in this browser demo.</p>
-          <div class="auth-demo-logins" aria-label="Demo login accounts">
-            <strong>Demo accounts</strong>
-            <span><b>Public:</b> public@irctc.test / PublicDemo2026!</span>
-            <span><b>Judges:</b> judges@irctc.test / JudgeDemo2026!</span>
-          </div>
           <p class="auth-error" id="user-auth-error" role="alert" hidden></p>
           <button type="submit" class="btn-primary auth-submit" id="user-auth-submit">SIGN IN SECURELY</button>
           <div class="auth-links"><button type="button" id="user-auth-recovery">Forgot account details?</button></div>

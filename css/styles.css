@@ -353,8 +353,6 @@ body.auth-modal-open { overflow: hidden; }
 .agreement-check input { margin-top: 2px; accent-color: var(--rail-navy); }
 
 .auth-risk-note { margin: 0 0 12px; padding: 9px 10px; border-radius: 6px; background: rgba(70, 122, 170, 0.08); }
-.auth-demo-logins { display: grid; gap: 4px; margin: 0 0 12px; padding: 10px; border: 1px dashed rgba(31, 75, 122, 0.24); border-radius: 6px; color: var(--text-secondary); font-size: 0.72rem; line-height: 1.45; }
-.auth-demo-logins strong { color: var(--rail-navy); font-size: 0.76rem; }
 .auth-error { margin: 0 0 12px; color: #a43725; font-size: 0.76rem; line-height: 1.4; }
 .auth-error.is-info { color: var(--rail-navy); }
 .auth-submit { width: 100%; min-height: 44px; }
