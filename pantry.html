@@ -2,6 +2,13 @@
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Find pantry car and onboard food information for your Indian Railways journey."><title>IRCTC — E-Pantry</title><link rel="stylesheet" href="css/styles.min.css"></head>
 <body data-page="meals"><header id="site-header"></header>
+  <style>
+    #pantry-menu .menu-item { position: relative; overflow: hidden; }
+    #pantry-menu .pantry-menu-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.35; transition: opacity 200ms ease; pointer-events: none; }
+    #pantry-menu .menu-item > :not(.pantry-menu-image) { position: relative; z-index: 1; }
+    #pantry-menu .menu-item h3, #pantry-menu .menu-item p, #pantry-menu .menu-item strong { font-weight: 800; }
+    #pantry-menu .menu-item:hover .pantry-menu-image { opacity: 1; }
+  </style>
   <main class="page-wrapper page-narrow"><div class="page-header"><h1 data-i18n="epantry">E-Pantry</h1><p class="subtitle" data-i18n="pantrySubtitle">Enter the PNR for your current journey to see available food.</p></div>
     <form class="glass-panel lookup-form" id="pantry-form"><div class="field-group"><label for="pantry-pnr" data-i18n="pnrLabel">PNR number</label><input class="field-input" id="pantry-pnr" type="text" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit PNR" data-i18n-placeholder="pnrPlaceholder" required></div><button class="btn-primary" data-i18n="viewMenu">View menu</button></form>
     <div id="pantry-menu" class="result-area" hidden></div>

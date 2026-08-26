@@ -683,12 +683,12 @@ function initPantry() {
     menu.innerHTML = `
       <p class="section-label">Ordering to PNR ${pnr} · Coach B3</p>
       <div class="menu-grid">
-        <article class="glass-panel menu-item"><h3>Veg Thali</h3><p>Rice, dal, sabzi, roti</p><strong>₹120</strong><button type="button" class="btn-secondary">ADD</button></article>
-        <article class="glass-panel menu-item"><h3>Veg Biryani</h3><p>With raita</p><strong>₹150</strong><button type="button" class="btn-secondary">ADD</button></article>
-        <article class="glass-panel menu-item"><h3>Samosa (2 pc)</h3><p>With chutney</p><strong>₹40</strong><button type="button" class="btn-secondary">ADD</button></article>
-        <article class="glass-panel menu-item"><h3>Tea / Coffee</h3><p>Hot beverage</p><strong>₹20</strong><button type="button" class="btn-secondary">ADD</button></article>
-        <article class="glass-panel menu-item"><h3>Packaged water</h3><p>1 litre</p><strong>₹20</strong><button type="button" class="btn-secondary">ADD</button></article>
-        <article class="glass-panel menu-item"><h3>Masala Maggi</h3><p>Hot snack</p><strong>₹50</strong><button type="button" class="btn-secondary">ADD</button></article>
+        <article class="glass-panel menu-item"><img class="pantry-menu-image" src="icons-package/assets/veg%20thali.png" alt="Veg Thali"><h3>Veg Thali</h3><p>Rice, dal, sabzi, roti</p><strong>₹120</strong><button type="button" class="btn-secondary">ADD</button></article>
+        <article class="glass-panel menu-item"><img class="pantry-menu-image" src="icons-package/assets/veg%20biryani.png" alt="Veg Biryani"><h3>Veg Biryani</h3><p>With raita</p><strong>₹150</strong><button type="button" class="btn-secondary">ADD</button></article>
+        <article class="glass-panel menu-item"><img class="pantry-menu-image" src="icons-package/assets/samosa.png" alt="Samosa (2 pc)"><h3>Samosa (2 pc)</h3><p>With chutney</p><strong>₹40</strong><button type="button" class="btn-secondary">ADD</button></article>
+        <article class="glass-panel menu-item"><img class="pantry-menu-image" src="icons-package/assets/tea%20coffee.png" alt="Tea / Coffee"><h3>Tea / Coffee</h3><p>Hot beverage</p><strong>₹20</strong><button type="button" class="btn-secondary">ADD</button></article>
+        <article class="glass-panel menu-item"><img class="pantry-menu-image" src="icons-package/assets/water.png" alt="Packaged water"><h3>Packaged water</h3><p>1 litre</p><strong>₹20</strong><button type="button" class="btn-secondary">ADD</button></article>
+        <article class="glass-panel menu-item"><img class="pantry-menu-image" src="icons-package/assets/maggie.png" alt="Masala Maggi"><h3>Masala Maggi</h3><p>Hot snack</p><strong>₹50</strong><button type="button" class="btn-secondary">ADD</button></article>
       </div>
     `;
     menu.querySelectorAll('.menu-item button').forEach((button) => {
