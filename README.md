@@ -197,5 +197,5 @@ This repository is a prototype. Browser-side state can be inspected or changed b
 
 ## License
 
-This project is available under the [MIT License](LICENSE).
 ## Vansh Mayekar & Rohit Ghorpade ##
+This project is available under the [MIT License](LICENSE).
