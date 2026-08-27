@@ -410,7 +410,7 @@ function appendMessage(text, role, speak = false) {
     avatarImage.style.objectFit = 'contain';
     avatar.appendChild(avatarImage);
   } else {
-    avatar.textContent = 'VM';
+    avatar.innerHTML = '<svg class="chat-user-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20c.7-3.6 3.3-5.5 7.5-5.5s6.8 1.9 7.5 5.5"></path></svg>';
   }
   div.append(role === 'bot' ? avatar : bubble, role === 'bot' ? bubble : avatar);
   helpMessages.appendChild(div);
