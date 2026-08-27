@@ -188,6 +188,7 @@ body::before {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
+  border: 2px solid #0066cc;
   background: linear-gradient(145deg, #2a5080, var(--rail-navy));
   color: #fff;
   display: flex;
@@ -199,6 +200,10 @@ body::before {
   letter-spacing: -0.5px;
   text-decoration: none;
   flex-shrink: 0;
+}
+
+.logo-mark img {
+  filter: brightness(0) saturate(100%) invert(25%) sepia(98%) saturate(2037%) hue-rotate(197deg) brightness(91%) contrast(103%);
 }
 
 .nav-auth {
