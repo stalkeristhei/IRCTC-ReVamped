@@ -49,7 +49,7 @@ flowchart LR
     B[Browser] --> W[CDN / WAF]
     W --> G[API gateway]
     G --> R[Reliability & Safety Layer]
-    R --> S[Auth | Search | Booking | PNR | Refund]
+    R --> S["Auth &#124; Search &#124; Booking &#124; PNR &#124; Refund"]
     S --> P[(PostgreSQL)]
     S --> D[(Redis)]
     S --> K[Kafka]
