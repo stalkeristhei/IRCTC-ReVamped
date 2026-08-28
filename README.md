@@ -9,6 +9,11 @@ IRCTC-ReVamped brings journey planning, PNR lookup, train status, refunds, meals
 
 Rail passengers often need to move between several tasks—searching trains, checking a PNR, tracking a refund, ordering food, and finding service links. This project explores a more approachable, responsive interface that groups those tasks into focused pages while keeping shared navigation and assistance available throughout the site.
 
+## Credentials for LogIn
+
+User id: public@irctc.test
+Password: PublicDemo2026!
+
 ## What works today
 
 | Area | Current behaviour | Data source / limitation |
